@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Block nothing public; adjust as needed
+Sitemap: https://www.tapisdigitech.com/sitemap.xml

@@ -1,0 +1,5 @@
+Contact: mailto:security@tapisdigitech.com
+Expires: 2027-06-28T20:35:43Z
+Preferred-Languages: en
+Canonical: https://www.tapisdigitech.com/.well-known/security.txt
+Canonical: https://www.tapisdigitech.com/security.txt

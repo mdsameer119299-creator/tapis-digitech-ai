@@ -1,0 +1,12 @@
+/* TEAM */
+  Company: TAPIS DIGITECH
+  Role: Enterprise AI & Digital Transformation
+  Location: New Delhi, India
+  Contact: hello [at] tapisdigitech.com
+
+/* SITE */
+  Standards: HTML5, CSS3, vanilla JavaScript
+  Components: Self-hosted Geist + Inter fonts, subset Font Awesome icons
+  Architecture: Static multi-page, mobile-first, JSON-LD structured data
+  Accessibility: WCAG 2.2 AA-oriented, keyboard + screen-reader friendly
+  Last updated: 2026-06

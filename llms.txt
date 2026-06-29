@@ -1,0 +1,58 @@
+# TAPIS DIGITECH
+
+> Enterprise AI & digital transformation company. We design, build and scale AI solutions, custom software, automation, cloud and digital growth for businesses worldwide.
+
+## Core pages
+- [Home](https://www.tapisdigitech.com/): Enterprise AI that grows businesses.
+- [About](https://www.tapisdigitech.com/about.html): Mission, team and approach.
+- [Services](https://www.tapisdigitech.com/services.html): AI, software, marketing, design, cloud.
+- [Industries](https://www.tapisdigitech.com/industries.html): AI solutions by sector.
+- [Solutions](https://www.tapisdigitech.com/solutions.html): Outcome-driven solutions (cost, revenue, support, automation).
+- [Case Studies](https://www.tapisdigitech.com/case-studies.html): Projects and results.
+- [Resources](https://www.tapisdigitech.com/resources.html): Guides, ebooks, webinars, FAQs.
+- [Careers](https://www.tapisdigitech.com/careers.html): Open roles.
+- [Contact](https://www.tapisdigitech.com/contact.html): Book a consultation or request a proposal.
+
+## Services (detail pages)
+- [AI Solutions](https://www.tapisdigitech.com/services/ai-solutions.html): AI agents, chatbots, voice AI and workflow automation.
+- [Software Development](https://www.tapisdigitech.com/services/software-development.html): Web, mobile, SaaS and custom software.
+- [Digital Marketing](https://www.tapisdigitech.com/services/digital-marketing.html): SEO, paid media, content and CRO.
+- [Branding & Design](https://www.tapisdigitech.com/services/branding-design.html): Brand identity, UI/UX and design systems.
+- [Cloud & IT Services](https://www.tapisdigitech.com/services/cloud-it.html): Cloud, DevOps and managed IT.
+
+## Industries (detail pages)
+- [Healthcare](https://www.tapisdigitech.com/industries/healthcare.html)
+- [Retail & E-commerce](https://www.tapisdigitech.com/industries/retail-ecommerce.html)
+- [Finance](https://www.tapisdigitech.com/industries/finance.html)
+
+## Solutions (detail pages)
+- [Reduce Support Costs](https://www.tapisdigitech.com/solutions/reduce-support-costs.html)
+- [Automate Operations](https://www.tapisdigitech.com/solutions/automate-operations.html)
+- [Increase Revenue](https://www.tapisdigitech.com/solutions/increase-revenue.html)
+
+## Trust Center
+- [Trust Center](https://www.tapisdigitech.com/trust/index.html): Security, privacy, responsible AI and quality.
+- [Security](https://www.tapisdigitech.com/trust/security.html)
+- [Responsible AI](https://www.tapisdigitech.com/trust/responsible-ai.html)
+- [Technology Stack](https://www.tapisdigitech.com/trust/technology-stack.html)
+- [Development Process](https://www.tapisdigitech.com/trust/development-process.html)
+- [Quality Assurance](https://www.tapisdigitech.com/trust/quality-assurance.html)
+
+## Blog
+- [Blog index](https://www.tapisdigitech.com/blog/index.html)
+- [How AI Agents Are Reshaping Customer Support](https://www.tapisdigitech.com/blog/ai-agents-customer-support.html)
+- [Automate These 7 Tasks Before Your Next Hire](https://www.tapisdigitech.com/blog/business-automation-before-hiring.html)
+- [A No-Drama Guide to Cloud Migration](https://www.tapisdigitech.com/blog/cloud-migration-guide.html)
+
+## Authors
+- [Priya Sharma](https://www.tapisdigitech.com/authors/priya-sharma.html)
+- [Rahul Mehta](https://www.tapisdigitech.com/authors/rahul-mehta.html)
+- [Sneha Nair](https://www.tapisdigitech.com/authors/sneha-nair.html)
+
+## Legal
+- [Privacy Policy](https://www.tapisdigitech.com/legal/privacy-policy.html)
+- [Terms & Conditions](https://www.tapisdigitech.com/legal/terms.html)
+
+## Other
+- [Search](https://www.tapisdigitech.com/search.html)
+- [Sitemap](https://www.tapisdigitech.com/sitemap.xml)

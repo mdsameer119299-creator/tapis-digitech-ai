@@ -1,0 +1,15 @@
+{
+  "name": "TAPIS DIGITECH — Enterprise AI & Digital Transformation",
+  "short_name": "TAPIS DIGITECH",
+  "description": "Enterprise AI & digital transformation company. We build AI solutions, custom software and automation that drive measurable business growth.",
+  "lang": "en",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a1124",
+  "theme_color": "#0a1124",
+  "icons": [
+    { "src": "/assets/favicons/favicon.png", "sizes": "64x64", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/logos/logo-light.png", "sizes": "200x100", "type": "image/png", "purpose": "any" }
+  ]
+}
