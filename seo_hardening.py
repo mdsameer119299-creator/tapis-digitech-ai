@@ -54,13 +54,30 @@ for path in files:
         count=1,
     )
 
-    # Normalize any explicit tel links to the verified number.
     text = re.sub(r'href="tel:\+?[0-9\-\s]+"', f'href="tel:+{WHATSAPP}"', text)
 
     if text != original:
         path.write_text(text, encoding='utf-8')
         changed.append(rel)
 
-print(f'SEO/contact hardening changed {len(changed)} HTML files')
+# Keep the generator's source-of-truth contact details aligned with production HTML.
+build_path = ROOT / 'build.py'
+if build_path.exists():
+    text = build_path.read_text(encoding='utf-8')
+    original = text
+    text = re.sub(r'^PHONE\s*=.*$', f'PHONE = "{DISPLAY_PHONE}"', text, flags=re.MULTILINE)
+    text = re.sub(r'^WA\s*=.*$', f'WA = "{WHATSAPP}"', text, flags=re.MULTILINE)
+    text = re.sub(r'"telephone":\s*"[^"]+"', f'"telephone": "{DISPLAY_PHONE}"', text)
+    text = text.replace(',\n         "sameAs": ["https://www.linkedin.com/", "https://twitter.com/", "https://www.facebook.com/"]', '')
+    text = re.sub(
+        r'<a class="fab fab-call" href="\{p\}contact\.html"[^>]*>',
+        f'<a class="fab fab-call" href="tel:+{WHATSAPP}" aria-label="Call TAPIS DIGITECH at {DISPLAY_PHONE}">',
+        text,
+    )
+    if text != original:
+        build_path.write_text(text, encoding='utf-8')
+        changed.append('build.py')
+
+print(f'SEO/contact hardening changed {len(changed)} files')
 for item in changed:
     print(item)
