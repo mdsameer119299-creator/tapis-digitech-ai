@@ -1,0 +1,60 @@
+name: TAPIS DIGITECH corrective trust cleanup
+
+on:
+  push:
+    branches: [seo-responsive-lead-gen-2026-08]
+
+permissions:
+  contents: write
+
+jobs:
+  corrective:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore index from pre-cleanup commit and apply precise cleanup
+        run: |
+          git show 58e6be704d68e9968470fb2e527fd5365c84e5a1:index.html > index.html
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("index.html")
+          text = path.read_text(encoding="utf-8")
+
+          # Remove only the section that actually contains the testimonial heading.
+          marker = "Trusted to build, ship and scale"
+          marker_pos = text.find(marker)
+          if marker_pos != -1:
+              section_start = text.rfind("<section", 0, marker_pos)
+              section_end = text.find("</section>", marker_pos)
+              if section_start == -1 or section_end == -1:
+                  raise SystemExit("Could not safely locate testimonial section")
+              text = text[:section_start] + text[section_end + len("</section>"):]
+
+          # Remove dead social-profile anchors with href="#".
+          text = re.sub(
+              r'<a\b[^>]*href="#"[^>]*>\s*<i\b[^>]*class="[^"]*fa-brands[^>]*>.*?</i>\s*</a>',
+              '',
+              text,
+              flags=re.IGNORECASE | re.DOTALL,
+          )
+
+          path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Validate and commit corrective result
+        run: |
+          grep -q "From strategy to growth — one accountable path" index.html
+          ! grep -q "Trusted to build, ship and scale" index.html
+          ! grep -q 'href="#" aria-label="TAPIS DIGITECH on' index.html
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/tapis-trust-cleanup-corrective.yml
+          git add index.html
+          git commit -m "SEO: correct trust cleanup without removing delivery timeline [skip ci]"
+          git push
