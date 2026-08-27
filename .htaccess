@@ -16,6 +16,11 @@ DirectoryIndex index.html
   RewriteRule ^index\.html$ / [R=301,L]
 </IfModule>
 
+# Protect the optional server-side SMTP secret file if it exists.
+<Files "smtp-secret.php">
+  Require all denied
+</Files>
+
 # Brotli where enabled; otherwise use gzip.
 <IfModule mod_brotli.c>
   AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/javascript application/javascript application/json application/xml image/svg+xml
