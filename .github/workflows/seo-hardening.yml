@@ -12,8 +12,14 @@ jobs:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout full history
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore internal search page from main, then apply noindex
+        run: |
+          git show origin/main:search.html > search.html
 
       - name: Run SEO hardening
         run: python3 seo_hardening.py
