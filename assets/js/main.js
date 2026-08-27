@@ -188,4 +188,27 @@ document.addEventListener('DOMContentLoaded', function () {
       inp.addEventListener('input', function(){ var fld=inp.closest('.field'); if(fld) fld.classList.remove('invalid'); });
     });
   });
+
+  // Real Hostinger/PHP contact submission. This listener runs after the legacy
+  // client-side validator above; when the contact form is valid, submit the
+  // native form so contact.php receives the lead instead of using fake success.
+  var serverContactForm = document.querySelector('#contact-form form[data-validate]');
+  if (serverContactForm) {
+    serverContactForm.setAttribute('action', 'contact.php');
+    serverContactForm.setAttribute('method', 'post');
+    serverContactForm.addEventListener('submit', function () {
+      var valid = true;
+      serverContactForm.querySelectorAll('[required]').forEach(function (inp) {
+        if (!inp.value.trim()) valid = false;
+        if (inp.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inp.value)) valid = false;
+      });
+      var hp = serverContactForm.querySelector('.hp input');
+      if (hp && hp.value) valid = false;
+      if (!valid) return;
+      window.setTimeout(function () {
+        serverContactForm.removeAttribute('data-validate');
+        HTMLFormElement.prototype.submit.call(serverContactForm);
+      }, 0);
+    });
+  }
 });
