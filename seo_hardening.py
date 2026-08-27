@@ -9,6 +9,7 @@ files = [p for p in ROOT.rglob('*.html') if not any(part in SKIP for part in p.p
 changed = []
 
 DISPLAY_PHONE = '+91-7428996299'
+TEL_PHONE = '+917428996299'
 WHATSAPP = '917428996299'
 OLD_PHONE_PATTERNS = (
     '+91 12345 67890', '+91-12345-67890', '+91 12345-67890', '911234567890',
@@ -41,22 +42,23 @@ for path in files:
 
     text = text.replace(',"sameAs":["https://www.linkedin.com/","https://twitter.com/","https://www.facebook.com/"]', '')
 
-    # Normalize WhatsApp destinations first so phone-text normalization cannot corrupt the URL.
+    # Normalize WhatsApp destinations before replacing any visible phone text.
     text = re.sub(r'https://wa\.me/[0-9+\-\s]+', f'https://wa.me/{WHATSAPP}', text)
 
-    # Normalize all known old/placeholder phone representations to the verified business number.
+    # Normalize known old/placeholder phone representations in visible text and schema.
     for old in OLD_PHONE_PATTERNS:
         text = text.replace(old, DISPLAY_PHONE)
 
-    # The floating call CTA must dial the verified business number directly, with one clean aria-label.
+    # Normalize every telephone href, including malformed values created by concatenating +91 twice.
+    text = re.sub(r'href="tel:[^"]*"', f'href="tel:{TEL_PHONE}"', text)
+
+    # Normalize floating call CTA to direct calling.
     text = re.sub(
         r'<a\s+class="fab fab-call"[^>]*>',
-        f'<a class="fab fab-call" href="tel:+{WHATSAPP}" aria-label="Call TAPIS DIGITECH at {DISPLAY_PHONE}">',
+        f'<a class="fab fab-call" href="tel:{TEL_PHONE}" aria-label="Call TAPIS DIGITECH at {DISPLAY_PHONE}">',
         text,
         count=1,
     )
-
-    text = re.sub(r'href="tel:\+?[0-9\-\s]+"', f'href="tel:+{WHATSAPP}"', text)
 
     if text != original:
         path.write_text(text, encoding='utf-8')
@@ -72,8 +74,8 @@ if build_path.exists():
     text = re.sub(r'"telephone":\s*"[^"]+"', f'"telephone": "{DISPLAY_PHONE}"', text)
     text = text.replace(',\n         "sameAs": ["https://www.linkedin.com/", "https://twitter.com/", "https://www.facebook.com/"]', '')
     text = re.sub(
-        r'<a class="fab fab-call" href="\{p\}contact\.html"[^>]*>',
-        f'<a class="fab fab-call" href="tel:+{WHATSAPP}" aria-label="Call TAPIS DIGITECH at {DISPLAY_PHONE}">',
+        r'<a class="fab fab-call" href="[^\"]*"[^>]*>',
+        f'<a class="fab fab-call" href="tel:{TEL_PHONE}" aria-label="Call TAPIS DIGITECH at {DISPLAY_PHONE}">',
         text,
     )
     if text != original:
