@@ -1,0 +1,31 @@
+name: TAPIS DIGITECH SEO hardening
+
+on:
+  push:
+    branches: [seo-responsive-lead-gen-2026-08]
+
+permissions:
+  contents: write
+
+jobs:
+  harden:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run SEO hardening
+        run: python3 seo_hardening.py
+
+      - name: Commit generated fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- '*.html' '**/*.html'
+          if git diff --cached --quiet; then
+            echo "No generated SEO changes."
+            exit 0
+          fi
+          git commit -m "SEO: harden static pages [skip ci]"
+          git push
