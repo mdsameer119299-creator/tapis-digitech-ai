@@ -17,8 +17,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Restore internal search page from main, then apply noindex
+      - name: Restore visual source-of-truth pages from main
         run: |
+          # Homepage appearance/content is protected: restore the main-branch
+          # homepage before applying technical-only SEO/contact changes.
+          git show origin/main:index.html > index.html
           git show origin/main:search.html > search.html
 
       - name: Run SEO and contact hardening
