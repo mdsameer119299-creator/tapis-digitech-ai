@@ -1,0 +1,62 @@
+name: TAPIS DIGITECH one-time trust cleanup
+
+on:
+  push:
+    branches: [seo-responsive-lead-gen-2026-08]
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Remove unverified homepage testimonials and dead social placeholders
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("index.html")
+          text = path.read_text(encoding="utf-8")
+          original = text
+
+          # Do not publish fabricated client identities, quotes, or star ratings.
+          text = re.sub(
+              r'<section\b(?=[\s\S]{0,6000}Trusted to build, ship and scale)(?:(?!<section\b)[\s\S])*?</section>',
+              '',
+              text,
+              count=1,
+              flags=re.IGNORECASE,
+          )
+
+          # Remove dead social-profile anchors with href="#".
+          text = re.sub(
+              r'<a\b[^>]*href="#"[^>]*>\s*<i\b[^>]*class="[^"]*fa-brands[^"]*(?:facebook|linkedin|instagram|youtube|x-twitter)[^"]*"[^>]*>.*?</i>\s*</a>',
+              '',
+              text,
+              flags=re.IGNORECASE | re.DOTALL,
+          )
+
+          if text != original:
+              path.write_text(text, encoding="utf-8")
+
+          PY
+
+      - name: Commit cleanup and remove this one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/tapis-trust-cleanup.yml
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No cleanup changes required."
+            exit 0
+          fi
+          git commit -m "SEO: remove unverified testimonials and dead social placeholders [skip ci]"
+          git push
