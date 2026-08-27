@@ -35,14 +35,10 @@ document.addEventListener('DOMContentLoaded', function () {
   if (topBtn) topBtn.addEventListener('click', function(){ window.scrollTo({top:0,behavior:'smooth'}); });
 
   // Scroll reveal — fail-open by design.
-  // The previous implementation depended entirely on IntersectionObserver.
-  // If JS was delayed, cached, blocked, or an observer callback failed,
-  // .reveal elements could remain opacity:0 and make whole pages look blank.
   var revealEls = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
   function revealAll() {
     revealEls.forEach(function (el) {
       el.classList.add('in');
-      // Hard visibility fallback so content can never remain hidden.
       el.style.opacity = '1';
       el.style.transform = 'none';
     });
@@ -61,9 +57,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       }, { threshold: 0.01, rootMargin: '0px 0px 180px 0px' });
       revealEls.forEach(function (el) { io.observe(el); });
-
-      // Safety net: even if the observer is unavailable or the page was
-      // restored from cache in an odd state, reveal everything shortly after load.
       window.setTimeout(revealAll, 900);
     } else {
       revealAll();
@@ -151,64 +144,60 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Forms: validation, honeypot, states (client-side; pair with server validation in production)
-  document.querySelectorAll('form[data-validate]').forEach(function (f) {
-    f.setAttribute('novalidate','');
-    f.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var ok = true;
-      var hp = f.querySelector('.hp input');
-      if (hp && hp.value) { return; }
-      f.querySelectorAll('[required]').forEach(function (inp) {
-        var field = inp.closest('.field');
-        var valid = inp.value.trim().length > 0;
-        if (inp.type === 'email') valid = valid && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inp.value);
-        if (field) field.classList.toggle('invalid', !valid);
-        if (!valid) ok = false;
+  // Contact form: validation only. The form itself submits natively to contact.php.
+  // This intentionally avoids competing submit handlers and fake client-side success states.
+  var contactForm = document.querySelector('#contact-form form[data-validate]');
+  if (contactForm) {
+    contactForm.setAttribute('action', 'contact.php');
+    contactForm.setAttribute('method', 'post');
+    contactForm.querySelectorAll('input,textarea,select').forEach(function(inp){
+      inp.addEventListener('input', function(){
+        var fld=inp.closest('.field');
+        if(fld) fld.classList.remove('invalid');
+        var status=contactForm.querySelector('.form-status');
+        if(status) status.textContent='';
       });
-      var status = f.querySelector('.form-status');
-      if (!ok) {
-        if (status){ status.className='form-status bad'; status.textContent='Please correct the highlighted fields.'; }
+    });
+    contactForm.addEventListener('submit', function(e){
+      var ok=true;
+      var hp=contactForm.querySelector('.hp input');
+      if(hp && hp.value){ e.preventDefault(); return; }
+      contactForm.querySelectorAll('[required]').forEach(function(inp){
+        var valid=inp.value.trim().length>0;
+        if(inp.type==='email') valid=valid && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inp.value);
+        var field=inp.closest('.field');
+        if(field) field.classList.toggle('invalid',!valid);
+        if(!valid) ok=false;
+      });
+      if(!ok){
+        e.preventDefault();
+        var status=contactForm.querySelector('.form-status');
+        if(status){ status.className='form-status bad'; status.textContent='Please review the highlighted fields and try again.'; }
         return;
       }
-      var btn = f.querySelector('button[type=submit],button:not([type])');
-      if (btn){
-        var t=btn.textContent;
-        btn.textContent='Sending…';
-        btn.disabled=true;
-        setTimeout(function(){
-          btn.textContent=t;
-          btn.disabled=false;
-          f.reset();
-          if(status){ status.className='form-status ok'; status.textContent='Thank you! Your message has been received. We’ll reply within one business day.'; }
-        }, 1200);
-      }
+      var btn=contactForm.querySelector('button[type="submit"]');
+      if(btn){ btn.disabled=true; btn.setAttribute('aria-busy','true'); btn.dataset.originalText=btn.textContent; btn.textContent='Sending…'; }
     });
-    f.querySelectorAll('input,textarea,select').forEach(function(inp){
-      inp.addEventListener('input', function(){ var fld=inp.closest('.field'); if(fld) fld.classList.remove('invalid'); });
-    });
-  });
+  }
 
-  // Real Hostinger/PHP contact submission. This listener runs after the legacy
-  // client-side validator above; when the contact form is valid, submit the
-  // native form so contact.php receives the lead instead of using fake success.
-  var serverContactForm = document.querySelector('#contact-form form[data-validate]');
-  if (serverContactForm) {
-    serverContactForm.setAttribute('action', 'contact.php');
-    serverContactForm.setAttribute('method', 'post');
-    serverContactForm.addEventListener('submit', function () {
-      var valid = true;
-      serverContactForm.querySelectorAll('[required]').forEach(function (inp) {
-        if (!inp.value.trim()) valid = false;
-        if (inp.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inp.value)) valid = false;
-      });
-      var hp = serverContactForm.querySelector('.hp input');
-      if (hp && hp.value) valid = false;
-      if (!valid) return;
-      window.setTimeout(function () {
-        serverContactForm.removeAttribute('data-validate');
-        HTMLFormElement.prototype.submit.call(serverContactForm);
-      }, 0);
-    });
+  // Display server response state after contact.php redirects back to contact.html.
+  var params = new URLSearchParams(window.location.search);
+  var responseState = params.get('sent') || params.get('error');
+  if (responseState) {
+    var status = document.querySelector('#contact-form .form-status');
+    if (status) {
+      if (responseState === 'sent') {
+        status.className='form-status ok';
+        status.textContent='Thank you. Your enquiry has been received. Our team will get back to you within one business day.';
+      } else if (responseState === 'validation' || responseState === 'invalid') {
+        status.className='form-status bad';
+        status.textContent='We could not process the enquiry. Please review the form and try again.';
+      } else if (responseState === 'mail') {
+        status.className='form-status bad';
+        status.textContent='We could not send the enquiry right now. Please contact us directly by email or WhatsApp.';
+      }
+      history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+      status.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }
   }
 });
