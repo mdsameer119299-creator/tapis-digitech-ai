@@ -1,9 +1,15 @@
 <?php
 // TAPIS DIGITECH — production contact handler for Hostinger.
-// Primary transport: Hostinger SMTP when TAPIS_SMTP_PASSWORD is available.
-// Safe fallback: Hostinger/PHP mail() so the form remains operational if SMTP env vars are not configured.
+// SMTP password is loaded only from the server-side environment or the untracked
+// smtp-secret.php file. Never place the mailbox password in GitHub.
 
 header('Content-Type: text/html; charset=UTF-8');
+
+$TAPIS_SMTP_PASSWORD = getenv('TAPIS_SMTP_PASSWORD') ?: '';
+$secretFile = __DIR__ . '/smtp-secret.php';
+if ($TAPIS_SMTP_PASSWORD === '' && is_file($secretFile)) {
+    require $secretFile; // defines $TAPIS_SMTP_PASSWORD on the server only
+}
 
 function redirect_back($query = '') {
     header('Location: /contact.html' . ($query ? '?' . $query : ''), true, 303);
@@ -28,7 +34,6 @@ function smtp_read($socket, $expected) {
         $data .= $line;
         if (isset($line[3]) && $line[3] === ' ') break;
     }
-    $code = (int)substr($data, -strlen($data) + 0, 3);
     $last = preg_match('/^(\d{3}) /m', trim($data), $m) ? (int)$m[1] : 0;
     if ($last !== $expected) {
         throw new RuntimeException('SMTP response ' . $last . ' expected ' . $expected);
@@ -42,8 +47,8 @@ function smtp_cmd($socket, $command, $expected) {
 }
 
 function smtp_send($to, $subject, $html, $replyTo, $fromName) {
-    $password = getenv('TAPIS_SMTP_PASSWORD');
-    if (!$password) return false;
+    global $TAPIS_SMTP_PASSWORD;
+    if (!$TAPIS_SMTP_PASSWORD) return false;
 
     $host = 'ssl://smtp.hostinger.com';
     $port = 465;
@@ -60,18 +65,19 @@ function smtp_send($to, $subject, $html, $replyTo, $fromName) {
         smtp_cmd($socket, 'EHLO tapisdigitech.com', 250);
         smtp_cmd($socket, 'AUTH LOGIN', 334);
         smtp_cmd($socket, base64_encode($username), 334);
-        smtp_cmd($socket, base64_encode($password), 235);
+        smtp_cmd($socket, base64_encode($TAPIS_SMTP_PASSWORD), 235);
         smtp_cmd($socket, 'MAIL FROM:<' . $username . '>', 250);
         smtp_cmd($socket, 'RCPT TO:<' . $to . '>', 250);
         smtp_cmd($socket, 'DATA', 354);
 
-        $headers = [];
-        $headers[] = 'From: ' . $fromName . ' <' . $username . '>';
-        $headers[] = 'To: <' . $to . '>';
+        $headers = [
+            'From: ' . $fromName . ' <' . $username . '>',
+            'To: <' . $to . '>',
+            'MIME-Version: 1.0',
+            'Content-Type: text/html; charset=UTF-8',
+            'X-Mailer: TAPIS DIGITECH Website'
+        ];
         if ($replyTo) $headers[] = 'Reply-To: ' . $replyTo;
-        $headers[] = 'MIME-Version: 1.0';
-        $headers[] = 'Content-Type: text/html; charset=UTF-8';
-        $headers[] = 'X-Mailer: TAPIS DIGITECH Website';
 
         $payload = implode("\r\n", $headers) . "\r\n\r\n" . $html;
         $payload = preg_replace('/(?m)^\./', '..', $payload);
@@ -151,13 +157,11 @@ $clientHtml = '<!doctype html><html><body style="margin:0;background:#f4f5f7;fon
  . '<p style="font-size:14px;line-height:1.7;color:#667085;">If your requirement is urgent, you can contact us directly on WhatsApp. We look forward to understanding your project and helping you move it forward.</p><p style="margin-bottom:0;font-size:14px;line-height:1.7;">Regards,<br><strong>TAPIS DIGITECH Team</strong><br><a href="https://www.tapisdigitech.com" style="color:#2563eb;">www.tapisdigitech.com</a></p></div>'
  . '<div style="padding:18px 32px;border-top:1px solid #e5e7eb;color:#98a2b3;font-size:12px;text-align:center;">TAPIS DIGITECH · AI · Automation · Software</div></div></body></html>';
 
-// Send the internal lead first. If SMTP credentials are configured, SMTP is preferred.
 $sent = smtp_send($to, $subject, $internalHtml, $email, 'TAPIS DIGITECH Website');
 if (!$sent) {
     $sent = native_mail_send($to, $subject, $internalHtml, $email, 'TAPIS DIGITECH Website');
 }
 
-// Acknowledge the client only after the internal lead has been accepted for delivery.
 if ($sent) {
     $clientSent = smtp_send($email, $clientSubject, $clientHtml, $to, 'TAPIS DIGITECH');
     if (!$clientSent) {
