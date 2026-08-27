@@ -39,21 +39,23 @@ for path in files:
 
     text = text.replace(',"sameAs":["https://www.linkedin.com/","https://twitter.com/","https://www.facebook.com/"]', '')
 
+    # Normalize WhatsApp destinations first so phone-text normalization cannot corrupt the URL.
+    text = re.sub(r'https://wa\.me/[0-9+\-\s]+', f'https://wa.me/{WHATSAPP}', text)
+
     # Normalize all known old/placeholder phone representations to the verified business number.
     for old in OLD_PHONE_PATTERNS:
         text = text.replace(old, DISPLAY_PHONE)
 
-    # Normalize all WhatsApp destinations to the verified number.
-    text = re.sub(r'https://wa\.me/\d+', f'https://wa.me/{WHATSAPP}', text)
-
-    # The floating call CTA must dial the verified business number directly.
+    # The floating call CTA must dial the verified business number directly, with one clean aria-label.
     text = re.sub(
-        r'(<a\s+class="fab fab-call"\s+)href="[^"]*"([^>]*)(>)',
-        rf'\1href="tel:+{WHATSAPP}"\2 aria-label="Call TAPIS DIGITECH at {DISPLAY_PHONE}"\3',
+        r'<a\s+class="fab fab-call"[^>]*>',
+        f'<a class="fab fab-call" href="tel:+{WHATSAPP}" aria-label="Call TAPIS DIGITECH at {DISPLAY_PHONE}">',
         text,
         count=1,
     )
-    text = re.sub(r'href="tel:\+?\d+"', f'href="tel:+{WHATSAPP}"', text)
+
+    # Normalize any explicit tel links to the verified number.
+    text = re.sub(r'href="tel:\+?[0-9\-\s]+"', f'href="tel:+{WHATSAPP}"', text)
 
     if text != original:
         path.write_text(text, encoding='utf-8')
