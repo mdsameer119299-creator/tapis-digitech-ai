@@ -1,0 +1,57 @@
+name: TAPIS DIGITECH social icon markup fix
+
+on:
+  push:
+    branches: [seo-responsive-lead-gen-2026-08]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fix social icon container markup
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          marker = '<div class="socials" aria-label="TAPIS DIGITECH social media">'
+          start = text.find(marker)
+          if start == -1:
+              raise SystemExit('Social container not found')
+          foot_cols = text.find('<div class="foot-cols">', start)
+          if foot_cols == -1:
+              raise SystemExit('Footer columns marker not found')
+          social_block = '''<div class="socials" aria-label="TAPIS DIGITECH social media">
+            <span title="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i><span class="sr-only">Facebook</span></span>
+            <span title="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i><span class="sr-only">LinkedIn</span></span>
+            <span title="X"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i><span class="sr-only">X</span></span>
+            <span title="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i><span class="sr-only">Instagram</span></span>
+            <span title="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i><span class="sr-only">YouTube</span></span>
+          </div>
+          '''
+          text = text[:start] + social_block + text[foot_cols:]
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Validate and commit
+        run: |
+          grep -q '<div class="socials" aria-label="TAPIS DIGITECH social media">' index.html
+          grep -q '</div>' index.html
+          grep -q 'fa-facebook-f' index.html
+          grep -q 'fa-linkedin-in' index.html
+          grep -q 'fa-instagram' index.html
+          grep -q 'fa-youtube' index.html
+          git rm .github/workflows/tapis-social-markup-fix.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'SEO: fix social icon markup [skip ci]'
+          git push
