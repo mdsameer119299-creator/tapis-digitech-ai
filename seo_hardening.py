@@ -58,8 +58,8 @@ for path in files:
     # Remove generic placeholder social URLs from structured data only.
     # The visible footer social icons/markup are left untouched.
     text = text.replace(',"sameAs":["https://www.linkedin.com/","https://twitter.com/","https://www.facebook.com/"]', '')
+    text = text.replace(',"sameAs":["https://www.linkedin.com/"]', '')
 
-    # Homepage metadata: stronger India + global commercial intent without changing visible copy/layout.
     if rel == 'index.html':
         text = re.sub(r'<title>.*?</title>', f'<title>{HOME_TITLE}</title>', text, count=1, flags=re.S)
         text = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{HOME_DESCRIPTION}">', text, count=1)
@@ -70,8 +70,6 @@ for path in files:
         text = re.sub(r'<meta name="twitter:description" content="[^"]*">', f'<meta name="twitter:description" content="{HOME_DESCRIPTION}">', text, count=1)
         text = text.replace('"name":"Enterprise AI Solutions, Software & Automation — TAPIS DIGITECH"', '"name":"AI Development & Automation Company in India | TAPIS DIGITECH"', 1)
 
-        # Keep the existing homepage testimonial design intact and append exactly one
-        # TAPIS KASA project-perspective card when it is not already present.
         if 'TAPIS KASA' not in text:
             marker = '''      <article class="tdx-tcard2 reveal" style="--d:160ms">
         <div class="stars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
@@ -81,18 +79,10 @@ for path in files:
             text = text.replace(marker, marker + '\n' + KASA_CARD, 1)
 
     text = re.sub(r'https://wa\.me/[0-9+\-\s]+', f'https://wa.me/{WHATSAPP}', text)
-
     for old in OLD_PHONE_PATTERNS:
         text = text.replace(old, DISPLAY_PHONE)
-
     text = re.sub(r'href="tel:[^"]*"', f'href="tel:{TEL_PHONE}"', text)
-
-    text = re.sub(
-        r'<a\s+class="fab fab-call"[^>]*>',
-        f'<a class="fab fab-call" href="tel:{TEL_PHONE}" aria-label="Call TAPIS DIGITECH at {DISPLAY_PHONE}">',
-        text,
-        count=1,
-    )
+    text = re.sub(r'<a\s+class="fab fab-call"[^>]*>', f'<a class="fab fab-call" href="tel:{TEL_PHONE}" aria-label="Call TAPIS DIGITECH at {DISPLAY_PHONE}">', text, count=1)
 
     if text != original:
         path.write_text(text, encoding='utf-8')
@@ -106,11 +96,8 @@ if build_path.exists():
     text = re.sub(r'^WA\s*=.*$', f'WA = "{WHATSAPP}"', text, flags=re.MULTILINE)
     text = re.sub(r'"telephone":\s*"[^"]+"', f'"telephone": "{DISPLAY_PHONE}"', text)
     text = text.replace(',\n         "sameAs": ["https://www.linkedin.com/", "https://twitter.com/", "https://www.facebook.com/"]', '')
-    text = re.sub(
-        r'<a class="fab fab-call" href="[^\"]*"[^>]*>',
-        f'<a class="fab fab-call" href="tel:{TEL_PHONE}" aria-label="Call TAPIS DIGITECH at {DISPLAY_PHONE}">',
-        text,
-    )
+    text = text.replace(',\n         "sameAs": ["https://www.linkedin.com/"]', '')
+    text = re.sub(r'<a class="fab fab-call" href="[^\"]*"[^>]*>', f'<a class="fab fab-call" href="tel:{TEL_PHONE}" aria-label="Call TAPIS DIGITECH at {DISPLAY_PHONE}">', text)
     if text != original:
         build_path.write_text(text, encoding='utf-8')
         changed.append('build.py')
