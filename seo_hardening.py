@@ -34,8 +34,10 @@ for path in files:
     expected = '../' * depth + 'browserconfig.xml'
     if depth == 0:
         text = text.replace('href="../browserconfig.xml"', 'href="browserconfig.xml"')
+        text = text.replace('content="../browserconfig.xml"', 'content="browserconfig.xml"')
     else:
         text = text.replace('href="browserconfig.xml"', f'href="{expected}"')
+        text = text.replace('content="browserconfig.xml"', f'content="{expected}"')
 
     text = text.replace(',"sameAs":["https://www.linkedin.com/","https://twitter.com/","https://www.facebook.com/"]', '')
 
