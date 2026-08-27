@@ -151,15 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Contact lead form: use the real Hostinger/PHP handler instead of a fake client-only success state.
-  var contactForm = document.querySelector('#contact-form form');
-  if (contactForm) {
-    contactForm.setAttribute('action', 'contact.php');
-    contactForm.setAttribute('method', 'post');
-    contactForm.removeAttribute('data-validate');
-  }
-
-  // Client-side validation for newsletter/other forms that do not have a server endpoint yet.
+  // Forms: validation, honeypot, states (client-side; pair with server validation in production)
   document.querySelectorAll('form[data-validate]').forEach(function (f) {
     f.setAttribute('novalidate','');
     f.addEventListener('submit', function (e) {
@@ -195,18 +187,5 @@ document.addEventListener('DOMContentLoaded', function () {
     f.querySelectorAll('input,textarea,select').forEach(function(inp){
       inp.addEventListener('input', function(){ var fld=inp.closest('.field'); if(fld) fld.classList.remove('invalid'); });
     });
-  }
-
-  // Show server-side contact form result after redirect.
-  var params = new URLSearchParams(window.location.search);
-  var status = document.querySelector('#contact-form .form-status');
-  if (status && params.get('sent') === '1') {
-    status.className = 'form-status ok';
-    status.textContent = 'Thank you! Your message has been received. We’ll reply within one business day.';
-    history.replaceState({}, document.title, window.location.pathname);
-  } else if (status && params.get('error')) {
-    status.className = 'form-status bad';
-    status.textContent = 'We could not send your message. Please try again or contact hello@tapisdigitech.com.';
-    history.replaceState({}, document.title, window.location.pathname);
-  }
+  });
 });
