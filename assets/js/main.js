@@ -29,10 +29,14 @@ document.addEventListener('DOMContentLoaded', function () {
   if (topBtn) topBtn.addEventListener('click', function(){ window.scrollTo({top:0,behavior:'smooth'}); });
 
   // Scroll reveal
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+  }
 
   // Counters
   function animate(el) {
@@ -41,10 +45,12 @@ document.addEventListener('DOMContentLoaded', function () {
       el.textContent = Math.round(target*e)+suffix; if(p<1) requestAnimationFrame(step); }
     requestAnimationFrame(step);
   }
-  var cio = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) { if (e.isIntersecting) { animate(e.target); cio.unobserve(e.target); } });
-  }, { threshold: 0.5 });
-  document.querySelectorAll('[data-count]').forEach(function (el) { el.textContent='0'+(el.dataset.suffix||''); cio.observe(el); });
+  if ('IntersectionObserver' in window) {
+    var cio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { animate(e.target); cio.unobserve(e.target); } });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-count]').forEach(function (el) { el.textContent='0'+(el.dataset.suffix||''); cio.observe(el); });
+  }
 
   // FAQ
   document.querySelectorAll('.faq-q').forEach(function (q) {
@@ -63,7 +69,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Dropdown accessibility: ARIA, keyboard (Escape) and touch toggle.
-  // Hover behaviour stays in CSS; this only enhances keyboard/touch users.
   document.querySelectorAll('.has-drop').forEach(function (drop) {
     var trigger = drop.querySelector(':scope > a');
     var menu = drop.querySelector(':scope > .dropdown');
@@ -74,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function () {
       drop.classList.toggle('open', open);
       trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
     }
-    // On coarse-pointer (touch) devices, first tap opens the menu instead of navigating.
     trigger.addEventListener('click', function (e) {
       if (window.matchMedia('(hover: none)').matches && !drop.classList.contains('open')) {
         e.preventDefault();
@@ -98,15 +102,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Forms: validation, honeypot, states (client-side; pair with server validation in production)
+  // Contact lead form: use the real Hostinger/PHP handler instead of a fake client-only success state.
+  var contactForm = document.querySelector('#contact-form form');
+  if (contactForm) {
+    contactForm.setAttribute('action', 'contact.php');
+    contactForm.setAttribute('method', 'post');
+    contactForm.removeAttribute('data-validate');
+  }
+
+  // Client-side validation for newsletter/other forms that do not have a server endpoint yet.
   document.querySelectorAll('form[data-validate]').forEach(function (f) {
     f.setAttribute('novalidate','');
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       var ok = true;
-      // honeypot
       var hp = f.querySelector('.hp input');
-      if (hp && hp.value) { return; } // bot
+      if (hp && hp.value) { return; }
       f.querySelectorAll('[required]').forEach(function (inp) {
         var field = inp.closest('.field'); var valid = inp.value.trim().length > 0;
         if (inp.type === 'email') valid = valid && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inp.value);
@@ -118,12 +129,25 @@ document.addEventListener('DOMContentLoaded', function () {
       var btn = f.querySelector('button[type=submit],button:not([type])');
       if (btn){ var t=btn.textContent; btn.textContent='Sending…'; btn.disabled=true;
         setTimeout(function(){ btn.textContent=t; btn.disabled=false; f.reset();
-          if(status){ status.className='form-status ok'; status.textContent='Thank you! Your message has been received. We\u2019ll reply within one business day.'; }
+          if(status){ status.className='form-status ok'; status.textContent='Thank you! Your message has been received. We’ll reply within one business day.'; }
         }, 1200);
       }
     });
     f.querySelectorAll('input,textarea,select').forEach(function(inp){
       inp.addEventListener('input', function(){ var fld=inp.closest('.field'); if(fld) fld.classList.remove('invalid'); });
     });
-  });
+  }
+
+  // Show server-side contact form result after redirect.
+  var params = new URLSearchParams(window.location.search);
+  var status = document.querySelector('#contact-form .form-status');
+  if (status && params.get('sent') === '1') {
+    status.className = 'form-status ok';
+    status.textContent = 'Thank you! Your message has been received. We’ll reply within one business day.';
+    history.replaceState({}, document.title, window.location.pathname);
+  } else if (status && params.get('error')) {
+    status.className = 'form-status bad';
+    status.textContent = 'We could not send your message. Please try again or contact hello@tapisdigitech.com.';
+    history.replaceState({}, document.title, window.location.pathname);
+  }
 });
