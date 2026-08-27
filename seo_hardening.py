@@ -2,7 +2,8 @@
 """Apply safe, repeatable technical SEO and contact-detail hardening to TAPIS DIGITECH static HTML.
 
 Homepage body/layout/content is intentionally NOT rewritten here. The workflow restores
-index.html from main first; this script only changes technical metadata and contact signals.
+index.html from main first; this script only changes technical metadata, contact signals,
+and the approved fourth testimonial placeholder.
 """
 import re
 from pathlib import Path
@@ -24,6 +25,12 @@ OLD_PHONE_PATTERNS = (
 HOME_TITLE = 'AI Development & Automation Company in India | TAPIS DIGITECH'
 HOME_DESCRIPTION = 'TAPIS DIGITECH builds AI agents, automation and custom software for businesses in India and global markets, including the USA, UK, UAE, Singapore and Australia.'
 HOME_KEYWORDS = 'AI development company India, AI automation company India, AI agents development, custom software development, AI consulting, enterprise AI solutions, AI company Delhi, software development company India, AI chatbot development, workflow automation, digital transformation, AI development USA, AI development UK, AI development UAE, AI development Singapore, AI development Australia'
+
+KASA_CARD = '''      <article class="tdx-tcard2 reveal" style="--d:240ms">
+        <div class="stars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="q">"TAPIS DIGITECH is helping us build a modern digital experience with technology, automation and a strong focus on how customers discover and engage with the brand."</p>
+        <div class="who"><span class="av">TK</span><span><b>Project Leadership Team</b><span>TAPIS KASA</span></span></div>
+      </article>'''
 
 for path in files:
     text = path.read_text(encoding='utf-8')
@@ -62,6 +69,16 @@ for path in files:
         text = re.sub(r'<meta name="twitter:title" content="[^"]*">', f'<meta name="twitter:title" content="{HOME_TITLE}">', text, count=1)
         text = re.sub(r'<meta name="twitter:description" content="[^"]*">', f'<meta name="twitter:description" content="{HOME_DESCRIPTION}">', text, count=1)
         text = text.replace('"name":"Enterprise AI Solutions, Software & Automation — TAPIS DIGITECH"', '"name":"AI Development & Automation Company in India | TAPIS DIGITECH"', 1)
+
+        # Keep the existing homepage testimonial design intact and append exactly one
+        # TAPIS KASA project-perspective card when it is not already present.
+        if 'TAPIS KASA' not in text:
+            marker = '''      <article class="tdx-tcard2 reveal" style="--d:160ms">
+        <div class="stars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="q">"From strategy to launch in weeks. The automation alone gave our team hours back every single week."</p>
+        <div class="who"><span class="av">HG</span><span><b>Head of Growth</b><span>SaaS</span></span></div>
+      </article>'''
+            text = text.replace(marker, marker + '\n' + KASA_CARD, 1)
 
     text = re.sub(r'https://wa\.me/[0-9+\-\s]+', f'https://wa.me/{WHATSAPP}', text)
 
