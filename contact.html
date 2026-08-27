@@ -71,7 +71,6 @@
     </div>
   </div>
 </section>
-
 <section class="section">
   <div class="container contact-grid">
     <div>
@@ -81,7 +80,7 @@
       <div class="info-card reveal"><div class="svc-ico"><i class="fa-solid fa-location-dot"></i></div><div><h4>Visit Us</h4><p>New Delhi, India</p></div></div><div class="info-card reveal"><div class="svc-ico"><i class="fa-solid fa-phone"></i></div><div><h4>Call Us</h4><p>+91-7428996299</p></div></div><div class="info-card reveal"><div class="svc-ico"><i class="fa-solid fa-envelope"></i></div><div><h4>Email Us</h4><p>hello@tapisdigitech.com</p></div></div><div class="info-card reveal"><div class="svc-ico"><i class="fa-solid fa-clock"></i></div><div><h4>Working Hours</h4><p>Mon–Sat, 9:00 AM – 7:00 PM IST</p></div></div>
     </div>
     <div class="form-card reveal" id="contact-form">
-      <form data-validate aria-label="Contact form">
+      <form action="/contact.php" method="POST" data-validate aria-label="Contact form">
         <div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" name="company_url" tabindex="-1" autocomplete="off"></label></div>
         <div class="row-2">
           <div class="field"><label for="c-name">Full Name</label><input id="c-name" name="name" type="text" placeholder="Your name" autocomplete="name" required><span class="err">Please enter your name.</span></div>
@@ -100,7 +99,6 @@
     </div>
   </div>
 </section>
-
 </main>
 <div class="float-ctas">
   <a class="fab fab-wa" href="https://wa.me/917428996299" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
@@ -122,78 +120,15 @@
         </div>
       </div>
       <div class="foot-cols">
-        <div class="foot-col">
-          <h4>Company</h4>
-          <ul>
-            <li><a href="about.html">About Us</a></li>
-            <li><a href="about.html#team">Our Team</a></li>
-            <li><a href="careers.html">Careers</a></li>
-            <li><a href="case-studies.html">Case Studies</a></li>
-            <li><a href="contact.html">Contact Us</a></li>
-          </ul>
-        </div>
-        <div class="foot-col">
-          <h4>Services</h4>
-          <ul>
-            <li><a href="ai-solutions.html">AI Solutions</a></li>
-            <li><a href="software-development.html">Software Development</a></li>
-            <li><a href="digital-marketing.html">Digital Marketing</a></li>
-            <li><a href="branding-design.html">Branding &amp; Design</a></li>
-            <li><a href="cloud-it.html">Cloud &amp; IT Services</a></li>
-          </ul>
-        </div>
-        <div class="foot-col">
-          <h4>Explore</h4>
-          <ul>
-            <li><a href="industries.html">Industries</a></li>
-            <li><a href="solutions.html">Solutions</a></li>
-            <li><a href="resources.html">Resources</a></li>
-            <li><a href="blog/index.html">Blog</a></li>
-            <li><a href="trust.html">Trust Center</a></li>
-          </ul>
-        </div>
-        <div class="foot-col">
-          <h4>Legal &amp; Support</h4>
-          <ul>
-            <li><a href="privacy-policy.html">Privacy Policy</a></li>
-            <li><a href="terms.html">Terms &amp; Conditions</a></li>
-            <li><a href="security.html">Security</a></li>
-            <li><a href="contact.html">Support</a></li>
-            <li><a href="sitemap.xml">Sitemap</a></li>
-          </ul>
-        </div>
+        <div class="foot-col"><h4>Company</h4><ul><li><a href="about.html">About Us</a></li><li><a href="about.html#team">Our Team</a></li><li><a href="careers.html">Careers</a></li><li><a href="case-studies.html">Case Studies</a></li><li><a href="contact.html">Contact Us</a></li></ul></div>
+        <div class="foot-col"><h4>Services</h4><ul><li><a href="ai-solutions.html">AI Solutions</a></li><li><a href="software-development.html">Software Development</a></li><li><a href="digital-marketing.html">Digital Marketing</a></li><li><a href="branding-design.html">Branding &amp; Design</a></li><li><a href="cloud-it.html">Cloud &amp; IT Services</a></li></ul></div>
+        <div class="foot-col"><h4>Explore</h4><ul><li><a href="industries.html">Industries</a></li><li><a href="solutions.html">Solutions</a></li><li><a href="resources.html">Resources</a></li><li><a href="blog/index.html">Blog</a></li><li><a href="trust.html">Trust Center</a></li></ul></div>
+        <div class="foot-col"><h4>Legal &amp; Support</h4><ul><li><a href="privacy-policy.html">Privacy Policy</a></li><li><a href="terms.html">Terms &amp; Conditions</a></li><li><a href="security.html">Security</a></li><li><a href="contact.html">Support</a></li><li><a href="sitemap.xml">Sitemap</a></li></ul></div>
       </div>
     </div>
-
-    <div class="foot-mid">
-      <div class="news">
-        <h4>Subscribe to our newsletter</h4>
-        <p>Get the latest on AI, automation and digital transformation — straight to your inbox.</p>
-      </div>
-      <form class="news-form" data-validate aria-label="Newsletter signup">
-        <div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" tabindex="-1" autocomplete="off"></label></div>
-        <label class="sr-only" for="news-email">Email address</label>
-        <input id="news-email" name="email" type="email" placeholder="Enter your email" required autocomplete="email">
-        <button type="submit">Subscribe</button>
-      </form>
-    </div>
-
-    <div class="foot-contact">
-      <div class="fc-item"><i class="fa-solid fa-location-dot"></i><div><b>Head Office</b><span>New Delhi, India</span></div></div>
-      <div class="fc-item"><i class="fa-solid fa-phone"></i><div><b>Call Us</b><span><a href="tel:+917428996299" style="color:inherit;text-decoration:none">+91-7428996299</a></span></div></div>
-      <div class="fc-item"><i class="fa-solid fa-envelope"></i><div><b>Email Us</b><span><a href="mailto:hello@tapisdigitech.com" style="color:inherit;text-decoration:none">hello@tapisdigitech.com</a></span></div></div>
-      <div class="fc-item"><i class="fa-solid fa-clock"></i><div><b>Working Hours</b><span>Mon–Sat, 9:00 AM – 7:00 PM IST</span></div></div>
-    </div>
-
-    <div class="foot-bottom">
-      <small>&copy; 2026 Tapis Digitech. All Rights Reserved.</small>
-      <div class="foot-badges">
-        <div class="foot-badge"><i class="fa-solid fa-shield-halved"></i><span><b>Secure by Design</b>Built-in security</span></div>
-        <div class="foot-badge"><i class="fa-solid fa-circle-check"></i><span><b>Human-in-the-Loop</b>Accountable AI</span></div>
-        <div class="foot-badge"><i class="fa-solid fa-layer-group"></i><span><b>Enterprise-Grade</b>Engineering</span></div>
-      </div>
-      <div class="made">Made with <span class="heart">&hearts;</span> in India</div>
-    </div>
+    <div class="foot-mid"><div class="news"><h4>Subscribe to our newsletter</h4><p>Get the latest on AI, automation and digital transformation — straight to your inbox.</p></div><form class="news-form" data-validate aria-label="Newsletter signup"><div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" tabindex="-1" autocomplete="off"></label></div><label class="sr-only" for="news-email">Email address</label><input id="news-email" name="email" type="email" placeholder="Enter your email" required autocomplete="email"><button type="submit">Subscribe</button></form></div>
+    <div class="foot-contact"><div class="fc-item"><i class="fa-solid fa-location-dot"></i><div><b>Head Office</b><span>New Delhi, India</span></div></div><div class="fc-item"><i class="fa-solid fa-phone"></i><div><b>Call Us</b><span><a href="tel:+917428996299" style="color:inherit;text-decoration:none">+91-7428996299</a></span></div></div><div class="fc-item"><i class="fa-solid fa-envelope"></i><div><b>Email Us</b><span><a href="mailto:hello@tapisdigitech.com" style="color:inherit;text-decoration:none">hello@tapisdigitech.com</a></span></div></div><div class="fc-item"><i class="fa-solid fa-clock"></i><div><b>Working Hours</b><span>Mon–Sat, 9:00 AM – 7:00 PM IST</span></div></div></div>
+    <div class="foot-bottom"><small>&copy; 2026 Tapis Digitech. All Rights Reserved.</small><div class="foot-badges"><div class="foot-badge"><i class="fa-solid fa-shield-halved"></i><span><b>Secure by Design</b>Built-in security</span></div><div class="foot-badge"><i class="fa-solid fa-circle-check"></i><span><b>Human-in-the-Loop</b>Accountable AI</span></div><div class="foot-badge"><i class="fa-solid fa-layer-group"></i><span><b>Enterprise-Grade</b>Engineering</span></div></div><div class="made">Made with <span class="heart">&hearts;</span> in India</div></div>
   </div>
 </footer>
 <script src="assets/js/main.js"></script>
