@@ -23,8 +23,8 @@ import json
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOMAIN = "https://www.tapisdigitech.com/"
 OG_IMAGE = DOMAIN + "assets/images/og-default.png"
-PHONE = "+91 12345 67890"          # PLACEHOLDER — replace with verified number
-WA = "911234567890"                # PLACEHOLDER — replace with verified WhatsApp
+PHONE = "+91-7428996299"
+WA = "917428996299"
 YEAR = 2026
 
 # ----------------------------------------------------------------------------
@@ -220,7 +220,7 @@ def footer(depth):
     return f"""</main>
 <div class="float-ctas">
   <a class="fab fab-wa" href="https://wa.me/{WA}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
-  <a class="fab fab-call" href="{p}contact.html" aria-label="Book a consultation"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i></a>
+  <a class="fab fab-call" href="tel:+917428996299" aria-label="Call TAPIS DIGITECH at +91-7428996299"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i></a>
   <button class="fab fab-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
 </div>
 <footer class="footer">
@@ -324,8 +324,7 @@ def org_nodes():
          "url": DOMAIN, "logo": DOMAIN + "assets/logos/logo-light.png",
          "description": "Enterprise AI & digital transformation company building AI solutions, custom software and automation.",
          "address": {"@type": "PostalAddress", "addressLocality": "New Delhi", "addressCountry": "IN"},
-         "contactPoint": {"@type": "ContactPoint", "telephone": "+91-12345-67890", "contactType": "sales", "areaServed": "Worldwide"},
-         "sameAs": ["https://www.linkedin.com/", "https://twitter.com/", "https://www.facebook.com/"]},
+         "contactPoint": {"@type": "ContactPoint", "telephone": "+91-7428996299", "contactType": "sales", "areaServed": "Worldwide"}},
         {"@type": "WebSite", "@id": DOMAIN + "#website", "url": DOMAIN, "name": "TAPIS DIGITECH",
          "publisher": {"@id": DOMAIN + "#organization"},
          "potentialAction": {"@type": "SearchAction",

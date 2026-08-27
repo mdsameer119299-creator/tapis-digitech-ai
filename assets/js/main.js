@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
           btn.textContent=t;
           btn.disabled=false;
           f.reset();
-          if(status){ status.className='form-status ok'; status.textContent='Thank you! Your message has been received. We\u2019ll reply within one business day.'; }
+          if(status){ status.className='form-status ok'; status.textContent='Thank you! Your message has been received. We’ll reply within one business day.'; }
         }, 1200);
       }
     });
