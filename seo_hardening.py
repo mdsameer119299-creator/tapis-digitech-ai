@@ -105,6 +105,33 @@ HERO_PROOF_STATS_OLD = (
     '<span>Platform uptime</span></div>\n'
     '      </div>'
 )
+HOME_CTA_TRACKING_PAIRS = (
+    (
+        '<a href="contact.html" class="btn btn-primary">Start your AI project '
+        '<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>',
+        '<a href="contact.html" class="btn btn-primary" data-track-cta="book_consultation_click">'
+        'Start your AI project <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>',
+    ),
+    (
+        '<div class="afx-cta reveal"><a href="contact.html" class="btn btn-primary">Build my AI business '
+        '<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div>',
+        '<div class="afx-cta reveal"><a href="contact.html" class="btn btn-primary" '
+        'data-track-cta="book_consultation_click">Build my AI business '
+        '<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></div>',
+    ),
+    (
+        '<a class="pc-link" href="contact.html">Start a project <i class="fa-solid fa-arrow-right"></i></a>',
+        '<a class="pc-link" href="contact.html" data-track-cta="book_consultation_click">'
+        'Start a project <i class="fa-solid fa-arrow-right"></i></a>',
+    ),
+    (
+        '<a href="contact.html" class="btn btn-primary">Book free consultation '
+        '<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>',
+        '<a href="contact.html" class="btn btn-primary" data-track-cta="book_consultation_click">'
+        'Book free consultation <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>',
+    ),
+)
+
 HERO_PROOF_STATS_NEW = (
     '<div class="proof reveal" style="--d:320ms">\n'
     '        <div class="s"><b>Global</b>'
@@ -262,6 +289,12 @@ for path in files:
 
         # Phase C P1 fix -- see HERO_PROOF_STATS_OLD/NEW above.
         text = text.replace(HERO_PROOF_STATS_OLD, HERO_PROOF_STATS_NEW, 1)
+
+        # Phase C P1 fix -- see HOME_CTA_TRACKING_PAIRS above. Adds
+        # data-track-cta to the homepage's primary lead-gen CTAs so they are
+        # no longer invisible to analytics (see assets/js/analytics.js).
+        for old_cta, new_cta in HOME_CTA_TRACKING_PAIRS:
+            text = text.replace(old_cta, new_cta, 1)
 
     text = re.sub(r'https://wa\.me/[0-9+\-\s]+', f'https://wa.me/{WHATSAPP}', text)
     for old in OLD_PHONE_PATTERNS:
