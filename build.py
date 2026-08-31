@@ -220,7 +220,7 @@ def footer(depth):
     return f"""</main>
 <div class="float-ctas">
   <a class="fab fab-wa" href="https://wa.me/{WA}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
-  <a class="fab fab-call" href="tel:+917428996299" aria-label="Call TAPIS DIGITECH at +91-7428996299"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i></a>
+  <a class="fab fab-call" href="tel:+917428996299" aria-label="Call TAPIS DIGITECH at +91-7428996299"><i class="fa-solid fa-phone" aria-hidden="true"></i></a>
   <button class="fab fab-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
 </div>
 <footer class="footer">
@@ -312,6 +312,7 @@ def footer(depth):
     </div>
   </div>
 </footer>
+<script src="{p}assets/js/analytics.js"></script>
 <script src="{p}assets/js/main.js"></script>
 </body>
 </html>"""

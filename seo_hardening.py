@@ -16,6 +16,21 @@ changed = []
 DISPLAY_PHONE = '+91-7428996299'
 TEL_PHONE = '+917428996299'
 WHATSAPP = '917428996299'
+
+# Stale, inert (commented-out) GTM placeholder with a fake container ID,
+# left over on 35 pages. It never executed (it's an HTML comment) but is
+# now fully superseded by assets/js/analytics.js, which is the one real,
+# working place to configure GTM_CONTAINER_ID (see docs/PHASE_B_SEO_AUDIT.md).
+# Keeping both around invites someone to "fill in" this dead one by mistake.
+OLD_GTM_COMMENT = (
+    "<!-- Google Tag Manager / GA4 placeholder — add your container ID before deploy\n"
+    "<script>(function(w,d,s,l,i){...GTM snippet...})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>\n"
+    "-->"
+)
+NEW_GTM_COMMENT = (
+    "<!-- Google Tag Manager / GA4: configure GTM_CONTAINER_ID in "
+    "assets/js/analytics.js -- see docs/PHASE_B_SEO_AUDIT.md -->"
+)
 OLD_PHONE_PATTERNS = (
     '+91 12345 67890', '+91-12345-67890', '+91 12345-67890', '911234567890',
     '+91 97182 24996', '+91-9718224996', '+91-97182-24996', '+91 9718224996',
@@ -139,6 +154,8 @@ for path in files:
 
     text = text.replace(',"sameAs":["https://www.linkedin.com/","https://twitter.com/","https://www.facebook.com/"]', '')
     text = text.replace(',"sameAs":["https://www.linkedin.com/"]', '')
+
+    text = text.replace(OLD_GTM_COMMENT, NEW_GTM_COMMENT, 1)
 
     if rel == 'index.html':
         text = re.sub(r'<title>.*?</title>', f'<title>{HOME_TITLE}</title>', text, count=1, flags=re.S)
@@ -267,6 +284,29 @@ for path in files:
             '<button type="submit">Subscribe</button>',
             '<button type="submit">Subscribe</button>\n'
             '        <p class="form-status" role="status" aria-live="polite"></p>',
+        )
+
+    # Load the analytics configuration/event-tracking helper (see
+    # assets/js/analytics.js) on every page, right before main.js. Safe to
+    # add everywhere: with no GTM_CONTAINER_ID configured it loads no
+    # external script and only maintains an in-memory dataLayer, so this
+    # cannot break any page. Idempotent -- matches either the plain or
+    # deferred main.js tag, and only once per file (won't double-insert).
+    analytics_tag = f'<script src="{"../" * depth}assets/js/analytics.js"></script>\n'
+    # NOTE: must check for the actual <script src="...analytics.js"> TAG here, not
+    # just the bare substring "assets/js/analytics.js" -- that substring is also
+    # present inside NEW_GTM_COMMENT's text ("configure GTM_CONTAINER_ID in
+    # assets/js/analytics.js"), which is written into the page a few lines above.
+    # A bare-substring guard would see that comment text and wrongly conclude the
+    # script tag was already inserted, silently skipping the injection on any
+    # page processed in a single pass (e.g. index.html/search.html each time CI
+    # restores them from main and reruns this script from scratch).
+    if not re.search(r'<script src="(?:\.\./)*assets/js/analytics\.js"></script>', text):
+        text = re.sub(
+            r'(<script src="(?:\.\./)*assets/js/main\.js"(?: defer)?></script>)',
+            analytics_tag + r'\1',
+            text,
+            count=1,
         )
 
     if text != original:

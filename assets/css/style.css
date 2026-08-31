@@ -116,7 +116,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);line-height:1.12;color:var(--ink);fo
 .dropdown a:hover i{background:var(--grad-blue);color:#fff}
 .nav-cta{display:flex;align-items:center;gap:14px}
 .nav-cta .btn{padding:11px 20px;font-size:15px}
-.burger{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:6px}
+.burger{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:14px 10px}
 .burger span{width:24px;height:2px;background:#fff;border-radius:2px;transition:.25s}
 .burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .burger.open span:nth-child(2){opacity:0}
