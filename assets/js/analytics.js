@@ -63,8 +63,22 @@ window.TDX_ANALYTICS_CONFIG = window.TDX_ANALYTICS_CONFIG || {
   // ---- Conversion event delegation -----------------------------------
   // Uses one delegated click listener on <body> rather than per-element
   // handlers, so it works for every current and future link on every page
-  // with zero HTML changes required.
+  // with zero HTML changes required for the URL-pattern-based events
+  // (tel:/mailto:/wa.me) below.
+  //
+  // For everything else, CTA classification prefers an explicit
+  // data-track-cta="<event_name>" attribute on the link over guessing from
+  // its visible text. This is the scalable path: adding or renaming a CTA
+  // just means setting/copying its data-track-cta attribute, and it can
+  // never silently stop being tracked because someone edited the button
+  // copy. The old text-pattern matching is kept as a fallback ONLY for
+  // links that don't yet carry the attribute, so nothing that already
+  // worked (book_consultation_click / get_quote_click / contact_page_cta_click)
+  // stops firing while pages are migrated over incrementally.
   function classifyCtaEvent(anchor) {
+    if (anchor.dataset && anchor.dataset.trackCta) {
+      return anchor.dataset.trackCta;
+    }
     var text = (anchor.textContent || '').trim().toLowerCase();
     var onContactPage = /\/contact\.html$/.test(window.location.pathname) || window.location.pathname === '/contact.html';
     if (/book.*consult|consultation|discovery call|schedule a demo/.test(text)) {
@@ -79,39 +93,73 @@ window.TDX_ANALYTICS_CONFIG = window.TDX_ANALYTICS_CONFIG || {
     return null;
   }
 
+  // Where on the page a click happened, for the cta_location param. An
+  // explicit data-cta-location on the element always wins; otherwise this
+  // falls back to DOM position, including a floating-widget check for the
+  // sticky WhatsApp/Call buttons (assets in .float-ctas).
+  function classifyCtaLocation(anchor) {
+    if (anchor.dataset && anchor.dataset.ctaLocation) {
+      return anchor.dataset.ctaLocation;
+    }
+    if (anchor.closest('.float-ctas')) { return 'floating'; }
+    if (anchor.closest('header')) { return 'header'; }
+    if (anchor.closest('footer')) { return 'footer'; }
+    if (anchor.closest('.cta-band, .tdx-cta, .tdx-final')) { return 'cta_band'; }
+    if (anchor.closest('.tdx-hero, section.hero')) { return 'hero'; }
+    if (anchor.closest('.afx-sec')) { return 'automation_flow'; }
+    if (anchor.closest('.tdx-prodcard')) { return 'products'; }
+    if (anchor.closest('section.sec.alt')) { return 'outcomes'; }
+    return 'body';
+  }
+
   document.addEventListener('click', function (e) {
     var anchor = e.target.closest('a');
     if (!anchor) { return; }
     var href = anchor.getAttribute('href') || '';
     var commonParams = {
       page_location: window.location.href,
-      page_title: document.title
+      page_title: document.title,
+      page_path: window.location.pathname
     };
 
     if (href.indexOf('tel:') === 0) {
-      tdxTrack('phone_click', commonParams);
+      tdxTrack('phone_click', Object.assign({}, commonParams, { cta_location: classifyCtaLocation(anchor) }));
       return;
     }
     if (href.indexOf('mailto:') === 0) {
-      tdxTrack('email_click', commonParams);
+      tdxTrack('email_click', Object.assign({}, commonParams, { cta_location: classifyCtaLocation(anchor) }));
       return;
     }
     if (href.indexOf('wa.me/') !== -1 || href.indexOf('api.whatsapp.com') !== -1) {
-      tdxTrack('whatsapp_click', commonParams);
+      tdxTrack('whatsapp_click', Object.assign({}, commonParams, { cta_location: classifyCtaLocation(anchor) }));
       return;
     }
 
     var ctaEvent = classifyCtaEvent(anchor);
     if (ctaEvent) {
       var params = Object.assign({}, commonParams, {
-        cta_location: (anchor.closest('header') && 'header') ||
-          (anchor.closest('footer') && 'footer') ||
-          (anchor.closest('.cta-band, .tdx-cta') && 'cta_band') ||
-          'body'
+        cta_name: (anchor.dataset && anchor.dataset.ctaName) || (anchor.textContent || '').trim(),
+        cta_location: classifyCtaLocation(anchor),
+        service: (anchor.dataset && anchor.dataset.service) || document.body.dataset.service || undefined
       });
       tdxTrack(ctaEvent, params);
     }
   }, true);
+
+  // ---- service_page_view -----------------------------------------------
+  // Fires once per page load, only on pages explicitly marked as an
+  // individual service page via <body data-page-type="service"
+  // data-service="...">. Deliberately does NOT fire on the services hub
+  // (data-page-type="service_hub") or on industry/solution/blog pages --
+  // this event answers "which specific service is generating interest",
+  // not "did someone view a page in the services section broadly".
+  if (document.body && document.body.dataset.pageType === 'service') {
+    tdxTrack('service_page_view', {
+      service: document.body.dataset.service || undefined,
+      page_path: window.location.pathname,
+      page_title: document.title
+    });
+  }
 
   // ---- Future-tools event helper (see docs/PHASE_B_SEO_AUDIT.md Part 15) --
   // Not wired to any page yet -- no tool exists in the repo at this phase.
