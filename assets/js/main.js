@@ -214,6 +214,27 @@ document.addEventListener('DOMContentLoaded', function () {
     f.querySelectorAll('input,textarea,select').forEach(function(inp){
       inp.addEventListener('input', function(){ var fld=inp.closest('.field'); if(fld) fld.classList.remove('invalid'); });
     });
+
+    // Track the first meaningful interaction with the main contact form (not
+    // the newsletter form -- a single-email field has no meaningful "start"
+    // stage distinct from submit). Fires once per page load, on first focus
+    // into any field, before the visitor has necessarily filled anything in.
+    // No field values or personal data are ever included -- only which form
+    // and which page, matching contact_form_submit/generate_lead's existing
+    // no-PII rule.
+    if (f.closest('#contact-form')) {
+      var contactFormStartTracked = false;
+      f.addEventListener('focusin', function () {
+        if (contactFormStartTracked) { return; }
+        contactFormStartTracked = true;
+        if (window.tdxTrack) {
+          window.tdxTrack('contact_form_start', {
+            form_name: 'contact',
+            page_path: window.location.pathname
+          });
+        }
+      });
+    }
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       if (f.dataset.submitting === '1') { return; } // guard against double-submit
