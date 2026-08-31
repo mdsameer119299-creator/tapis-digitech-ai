@@ -1,5 +1,16 @@
 .DS_Store
+Thumbs.db
+*.zip
+node_modules/
+.vscode/
+.idea/
+*.log
+__pycache__/
+*.pyc
+
+# Server-side SMTP credentials -- never commit these. TAPIS_SMTP_PASSWORD is
+# read from an environment variable first; smtp-secret.php is the fallback
+# file created directly on the host (see contact.php).
+smtp-secret.php
 .env
 .env.*
-*.log
-smtp-secret.php

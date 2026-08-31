@@ -116,7 +116,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);line-height:1.12;color:var(--ink);fo
 .dropdown a:hover i{background:var(--grad-blue);color:#fff}
 .nav-cta{display:flex;align-items:center;gap:14px}
 .nav-cta .btn{padding:11px 20px;font-size:15px}
-.burger{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:6px}
+.burger{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:14px 10px}
 .burger span{width:24px;height:2px;background:#fff;border-radius:2px;transition:.25s}
 .burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .burger.open span:nth-child(2){opacity:0}
@@ -358,6 +358,12 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);line-height:1.12;color:var(--ink);fo
 .case-metrics{display:flex;gap:24px;border-top:1px solid var(--line);padding-top:16px}
 .case-metrics b{display:block;font-family:var(--font-head);font-size:23px;color:var(--blue-600)}
 .case-metrics span{font-size:13.5px;color:var(--muted)}
+.case-link{display:inline-flex;align-items:center;gap:8px;margin-top:16px;color:var(--blue-600);font-weight:600;font-size:.9rem;text-decoration:none}
+.case-link i{transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.case-link:hover i{transform:translateX(5px)}
+.case-card-cta{border:1px dashed rgba(32,144,234,.4);background:linear-gradient(160deg,var(--surface-2),var(--surface-3))}
+.case-card-cta:hover{transform:none;box-shadow:none}
+.case-card-cta .case-body{text-align:center}
 
 /* careers / jobs */
 .job{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px 28px;

@@ -35,10 +35,14 @@ document.addEventListener('DOMContentLoaded', function () {
   if (topBtn) topBtn.addEventListener('click', function(){ window.scrollTo({top:0,behavior:'smooth'}); });
 
   // Scroll reveal — fail-open by design.
+  // The previous implementation depended entirely on IntersectionObserver.
+  // If JS was delayed, cached, blocked, or an observer callback failed,
+  // .reveal elements could remain opacity:0 and make whole pages look blank.
   var revealEls = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
   function revealAll() {
     revealEls.forEach(function (el) {
       el.classList.add('in');
+      // Hard visibility fallback so content can never remain hidden.
       el.style.opacity = '1';
       el.style.transform = 'none';
     });
@@ -57,6 +61,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       }, { threshold: 0.01, rootMargin: '0px 0px 180px 0px' });
       revealEls.forEach(function (el) { io.observe(el); });
+
+      // Safety net: even if the observer is unavailable or the page was
+      // restored from cache in an odd state, reveal everything shortly after load.
       window.setTimeout(revealAll, 900);
     } else {
       revealAll();
@@ -144,60 +151,159 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Contact form: validation only. The form itself submits natively to contact.php.
-  // This intentionally avoids competing submit handlers and fake client-side success states.
-  var contactForm = document.querySelector('#contact-form form[data-validate]');
-  if (contactForm) {
-    contactForm.setAttribute('action', 'contact.php');
-    contactForm.setAttribute('method', 'post');
-    contactForm.querySelectorAll('input,textarea,select').forEach(function(inp){
-      inp.addEventListener('input', function(){
-        var fld=inp.closest('.field');
-        if(fld) fld.classList.remove('invalid');
-        var status=contactForm.querySelector('.form-status');
-        if(status) status.textContent='';
-      });
-    });
-    contactForm.addEventListener('submit', function(e){
-      var ok=true;
-      var hp=contactForm.querySelector('.hp input');
-      if(hp && hp.value){ e.preventDefault(); return; }
-      contactForm.querySelectorAll('[required]').forEach(function(inp){
-        var valid=inp.value.trim().length>0;
-        if(inp.type==='email') valid=valid && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inp.value);
-        var field=inp.closest('.field');
-        if(field) field.classList.toggle('invalid',!valid);
-        if(!valid) ok=false;
-      });
-      if(!ok){
-        e.preventDefault();
-        var status=contactForm.querySelector('.form-status');
-        if(status){ status.className='form-status bad'; status.textContent='Please review the highlighted fields and try again.'; }
-        return;
-      }
-      var btn=contactForm.querySelector('button[type="submit"]');
-      if(btn){ btn.disabled=true; btn.setAttribute('aria-busy','true'); btn.dataset.originalText=btn.textContent; btn.textContent='Sending…'; }
-    });
+  // Lead forms: both the contact form and the newsletter signup post to the
+  // real Hostinger/PHP handler and only ever show a "received" state after
+  // the server actually confirms it -- never on a fixed timer. (main.js has
+  // twice regressed to a client-only fake setTimeout success on this
+  // branch; if you are re-merging this file from main or elsewhere, keep
+  // this block intact.)
+  //
+  // The raw HTML already carries a real action/method (see contact.html and
+  // the news-form markup) so a submission still reaches contact.php even if
+  // this script never runs. When it does run, submission is upgraded to a
+  // real fetch() POST so the page can show a "Sending..." state, disable the
+  // button, and display the server's actual response without a full reload.
+  document.querySelectorAll('.news-form').forEach(function (f) {
+    // Back-compat: data-action (relative path fix for subdirectory pages)
+    // still wins if present; otherwise trust whatever real action the HTML
+    // already has, falling back to 'contact.php' only as a last resort.
+    var realAction = f.getAttribute('data-action') || f.getAttribute('action') || 'contact.php';
+    f.setAttribute('action', realAction);
+    f.setAttribute('method', 'post');
+  });
+  var contactFormEl = document.querySelector('#contact-form form');
+  if (contactFormEl && !contactFormEl.getAttribute('action')) {
+    contactFormEl.setAttribute('action', 'contact.php');
+    contactFormEl.setAttribute('method', 'post');
   }
 
-  // Display server response state after contact.php redirects back to contact.html.
-  var params = new URLSearchParams(window.location.search);
-  var responseState = params.get('sent') || params.get('error');
-  if (responseState) {
-    var status = document.querySelector('#contact-form .form-status');
-    if (status) {
-      if (responseState === 'sent') {
-        status.className='form-status ok';
-        status.textContent='Thank you. Your enquiry has been received. Our team will get back to you within one business day.';
-      } else if (responseState === 'validation' || responseState === 'invalid') {
-        status.className='form-status bad';
-        status.textContent='We could not process the enquiry. Please review the form and try again.';
-      } else if (responseState === 'mail') {
-        status.className='form-status bad';
-        status.textContent='We could not send the enquiry right now. Please contact us directly by email or WhatsApp.';
+  // Client-side validation only (for any form still marked data-validate
+  // with no server endpoint configured -- not the contact/newsletter forms,
+  // handled separately below).
+  document.querySelectorAll('form[data-validate]').forEach(function (f) {
+    if (f.classList.contains('news-form') || f.closest('#contact-form')) { return; }
+    f.setAttribute('novalidate','');
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var ok = true;
+      var hp = f.querySelector('.hp input');
+      if (hp && hp.value) { return; }
+      f.querySelectorAll('[required]').forEach(function (inp) {
+        var field = inp.closest('.field'); var valid = inp.value.trim().length > 0;
+        if (inp.type === 'email') valid = valid && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inp.value);
+        if (field) field.classList.toggle('invalid', !valid);
+        if (!valid) ok = false;
+      });
+      var status = f.querySelector('.form-status');
+      if (!ok) { if (status){ status.className='form-status bad'; status.textContent='Please correct the highlighted fields.'; } return; }
+      if (status){ status.className='form-status bad'; status.textContent='This form is not connected to a server endpoint yet.'; }
+    });
+    f.querySelectorAll('input,textarea,select').forEach(function(inp){
+      inp.addEventListener('input', function(){ var fld=inp.closest('.field'); if(fld) fld.classList.remove('invalid'); });
+    });
+  });
+
+  // Real submission handler for the contact form and every newsletter form:
+  // validate -> disable button + show "Sending..." -> real POST via fetch()
+  // -> wait for and parse the actual server response -> show success ONLY
+  // if the server reports success, otherwise show a real error. No network
+  // call is ever assumed to succeed, and no message is shown before the
+  // response arrives.
+  document.querySelectorAll('#contact-form form, .news-form').forEach(function (f) {
+    f.setAttribute('novalidate','');
+    f.querySelectorAll('input,textarea,select').forEach(function(inp){
+      inp.addEventListener('input', function(){ var fld=inp.closest('.field'); if(fld) fld.classList.remove('invalid'); });
+    });
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (f.dataset.submitting === '1') { return; } // guard against double-submit
+
+      var ok = true;
+      f.querySelectorAll('[required]').forEach(function (inp) {
+        var field = inp.closest('.field'); var valid = inp.value.trim().length > 0;
+        if (inp.type === 'email') valid = valid && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inp.value);
+        if (field) field.classList.toggle('invalid', !valid);
+        if (!valid) ok = false;
+      });
+      var status = f.querySelector('.form-status');
+      if (!ok) {
+        if (status){ status.className='form-status bad'; status.textContent='Please correct the highlighted fields.'; }
+        return;
       }
-      history.replaceState({}, document.title, window.location.pathname + window.location.hash);
-      status.scrollIntoView({behavior:'smooth', block:'nearest'});
-    }
+
+      var btn = f.querySelector('button[type="submit"]');
+      var originalBtnHTML = btn ? btn.innerHTML : '';
+      f.dataset.submitting = '1';
+      if (btn) { btn.disabled = true; btn.innerHTML = 'Sending&hellip;'; }
+      if (status) { status.className = 'form-status'; status.textContent = ''; }
+
+      fetch(f.getAttribute('action'), {
+        method: 'POST',
+        body: new FormData(f),
+        headers: { 'X-TDX-Ajax': '1' },
+        credentials: 'same-origin'
+      })
+        .then(function (res) {
+          return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+        })
+        .then(function (result) {
+          var data = result.data || {};
+          if (result.ok && data.success) {
+            if (status) { status.className = 'form-status ok'; status.textContent = data.message || 'Thank you! Your submission has been received.'; }
+            // Fire the conversion event only now -- after the server has
+            // actually confirmed success, never optimistically. See
+            // assets/js/analytics.js; a no-op if that file hasn't loaded.
+            if (window.tdxTrack) {
+              var isContactForm = !!f.closest('#contact-form');
+              var commonParams = { page_location: window.location.href, page_title: document.title };
+              if (isContactForm) {
+                window.tdxTrack('contact_form_submit', commonParams);
+                window.tdxTrack('generate_lead', Object.assign({ lead_source: 'contact_form' }, commonParams));
+              } else {
+                window.tdxTrack('newsletter_signup', commonParams);
+              }
+            }
+            f.reset();
+          } else {
+            if (status) { status.className = 'form-status bad'; status.textContent = data.message || 'Sorry, something went wrong. Please try again or contact us directly.'; }
+          }
+        })
+        .catch(function () {
+          // Network failure, server unreachable, or a non-JSON response --
+          // never shown as success, since the server never confirmed it.
+          if (status) { status.className = 'form-status bad'; status.textContent = "Sorry, we couldn't reach the server. Please check your connection and try again, or contact hello@tapisdigitech.com directly."; }
+        })
+        .finally(function () {
+          f.dataset.submitting = '0';
+          if (btn) { btn.disabled = false; btn.innerHTML = originalBtnHTML; }
+        });
+    });
+  });
+
+  // No-JS fallback only: if this script never ran (blocked, failed to load,
+  // or errored earlier in the file), the form above still submits natively
+  // via its real action/method, contact.php redirects back with a query
+  // param, and -- if main.js loads successfully on that next page load --
+  // this shows the same real, server-confirmed result.
+  var params = new URLSearchParams(window.location.search);
+  var contactStatus = document.querySelector('#contact-form .form-status');
+  if (contactStatus && params.get('sent') === '1') {
+    contactStatus.className = 'form-status ok';
+    contactStatus.textContent = 'Thank you! Your message has been received. We’ll reply within one business day.';
+    history.replaceState({}, document.title, window.location.pathname);
+  } else if (contactStatus && params.get('error')) {
+    contactStatus.className = 'form-status bad';
+    contactStatus.textContent = 'We could not send your message. Please try again or contact hello@tapisdigitech.com.';
+    history.replaceState({}, document.title, window.location.pathname);
+  }
+  var newsStatus = document.querySelector('.news-form .form-status');
+  if (newsStatus && params.get('subscribed') === '1') {
+    newsStatus.className = 'form-status ok';
+    newsStatus.textContent = 'Thanks — you’re subscribed.';
+    history.replaceState({}, document.title, window.location.pathname);
+  } else if (newsStatus && params.get('sub_error')) {
+    newsStatus.className = 'form-status bad';
+    newsStatus.textContent = 'We could not subscribe you. Please try again or email hello@tapisdigitech.com.';
+    history.replaceState({}, document.title, window.location.pathname);
   }
 });
