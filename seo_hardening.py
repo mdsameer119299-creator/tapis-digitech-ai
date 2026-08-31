@@ -61,6 +61,61 @@ KASA_CARD_FAKE_RATED = '''      <article class="tdx-tcard2 reveal" style="--d:24
         <div class="who"><span class="av">TK</span><span><b>Project Leadership Team</b><span>TAPIS KASA</span></span></div>
       </article>'''
 
+# Phase C P0 fix: the homepage "Our Products" TAPIS GLOBAL card carried an
+# unverifiable "ISO 9001:2015" certification tag and a "45+ export markets" /
+# "45+ Markets" claim -- the same claims the user already ruled unverifiable
+# and had removed from case-studies.html during the Phase A correction. That
+# fix only ever reached case-studies.html; this restores the same standard to
+# the homepage, with honest capability-focused wording and no invented
+# replacement metric, kept here (not just a direct file edit) so it survives
+# the CI restore-from-main step.
+TAPIS_GLOBAL_CARD_OLD = (
+    '<p>A B2B platform for premium handmade carpets &amp; rugs &mdash; '
+    'hand-tufted, hand-knotted, jute and custom flooring supplied to hotels, '
+    'architects and designers across India and 45+ export markets.</p>\n'
+    '          <div class="pc-tags"><span>Manufacturer</span><span>Exporter</span>'
+    '<span>Wholesaler</span><span>ISO 9001:2015</span><span>45+ Markets</span></div>'
+)
+TAPIS_GLOBAL_CARD_NEW = (
+    '<p>A B2B platform for premium handmade carpets &amp; rugs &mdash; '
+    'hand-tufted, hand-knotted, jute and custom flooring, supporting '
+    'made-to-order projects for hospitality, architecture, interior design '
+    'and commercial buyers.</p>\n'
+    '          <div class="pc-tags"><span>Manufacturer</span><span>Exporter</span>'
+    '<span>Wholesaler</span><span>Made-to-Order</span><span>Custom Flooring</span></div>'
+)
+
+# Phase C P1 fix: the hero "proof" strip presented three animated-counter
+# statistics (45+ countries, 3.4x faster delivery, 99.9% uptime) as bare,
+# undisclosed figures -- unlike the ROI section further down the same page,
+# which already discloses its similar stats as "illustrative ranges based on
+# typical enterprise engagements". These three numbers could not be verified
+# in this engagement, so they are replaced with honest qualitative value
+# props (no invented number), consistent with claims already made elsewhere
+# on this same page (the FAQ's "deliver for clients worldwide", the timeline's
+# "first value in weeks", and the "enterprise-grade by default" why-choose
+# card) rather than a new claim.
+HERO_PROOF_STATS_OLD = (
+    '<div class="proof reveal" style="--d:320ms">\n'
+    '        <div class="s"><b data-count="45" data-suffix="+">0+</b>'
+    '<span>Countries reached for clients</span></div>\n'
+    '        <div class="s"><b data-count="3.4" data-suffix="×" data-dec="1">0×</b>'
+    '<span>Faster delivery</span></div>\n'
+    '        <div class="s"><b data-count="99.9" data-suffix="%" data-dec="1">0%</b>'
+    '<span>Platform uptime</span></div>\n'
+    '      </div>'
+)
+HERO_PROOF_STATS_NEW = (
+    '<div class="proof reveal" style="--d:320ms">\n'
+    '        <div class="s"><b>Global</b>'
+    '<span>Delivery for clients across India and international markets</span></div>\n'
+    '        <div class="s"><b>Rapid</b>'
+    '<span>Sprint-based delivery, first value in weeks</span></div>\n'
+    '        <div class="s"><b>Secure</b>'
+    '<span>Enterprise-grade infrastructure by design</span></div>\n'
+    '      </div>'
+)
+
 SERVICE_DROPDOWN = '''<div class="dropdown"><a href="ai-agent-automation.html"><i class="fa-solid fa-robot" aria-hidden="true"></i>AI &amp; Agentic Automation</a><a href="software-development.html"><i class="fa-solid fa-code" aria-hidden="true"></i>Software &amp; Product Engineering</a><a href="whatsapp-ai-automation.html"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i>WhatsApp AI Automation</a><a href="data-business-intelligence.html"><i class="fa-solid fa-chart-line" aria-hidden="true"></i>Data &amp; Business Intelligence</a><a href="cybersecurity-ai-security.html"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i>Cybersecurity &amp; AI Security</a><a href="cloud-it.html"><i class="fa-solid fa-cloud" aria-hidden="true"></i>Cloud &amp; DevOps</a><a href="digital-marketing.html"><i class="fa-solid fa-magnifying-glass-chart" aria-hidden="true"></i>Digital Growth &amp; AI Search</a><a href="branding-design.html"><i class="fa-solid fa-pen-nib" aria-hidden="true"></i>Brand &amp; Digital Experience</a></div>'''
 
 # Homepage testimonials: swap unattributed placeholder quotes for content grounded in
@@ -201,6 +256,12 @@ for path in files:
         )
 
         text = text.replace(HOME_FOOTER_EXPLORE_OLD, HOME_FOOTER_EXPLORE_NEW, 1)
+
+        # Phase C P0 fix -- see TAPIS_GLOBAL_CARD_OLD/NEW above.
+        text = text.replace(TAPIS_GLOBAL_CARD_OLD, TAPIS_GLOBAL_CARD_NEW, 1)
+
+        # Phase C P1 fix -- see HERO_PROOF_STATS_OLD/NEW above.
+        text = text.replace(HERO_PROOF_STATS_OLD, HERO_PROOF_STATS_NEW, 1)
 
     text = re.sub(r'https://wa\.me/[0-9+\-\s]+', f'https://wa.me/{WHATSAPP}', text)
     for old in OLD_PHONE_PATTERNS:
