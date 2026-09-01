@@ -239,7 +239,7 @@ def footer(depth):
       </div>
       <div class="foot-cols">
         <div class="foot-col">
-          <h4>Company</h4>
+          <h3>Company</h3>
           <ul>
             <li><a href="{L('about.html')}">About Us</a></li>
             <li><a href="{L('about.html#team')}">Our Team</a></li>
@@ -249,7 +249,7 @@ def footer(depth):
           </ul>
         </div>
         <div class="foot-col">
-          <h4>Services</h4>
+          <h3>Services</h3>
           <ul>
             <li><a href="{L('services/ai-solutions.html')}">AI Solutions</a></li>
             <li><a href="{L('services/software-development.html')}">Software Development</a></li>
@@ -259,7 +259,7 @@ def footer(depth):
           </ul>
         </div>
         <div class="foot-col">
-          <h4>Explore</h4>
+          <h3>Explore</h3>
           <ul>
             <li><a href="{L('industries.html')}">Industries</a></li>
             <li><a href="{L('solutions.html')}">Solutions</a></li>
@@ -269,7 +269,7 @@ def footer(depth):
           </ul>
         </div>
         <div class="foot-col">
-          <h4>Legal &amp; Support</h4>
+          <h3>Legal &amp; Support</h3>
           <ul>
             <li><a href="{L('legal/privacy-policy.html')}">Privacy Policy</a></li>
             <li><a href="{L('legal/terms.html')}">Terms &amp; Conditions</a></li>
@@ -283,7 +283,7 @@ def footer(depth):
 
     <div class="foot-mid">
       <div class="news">
-        <h4>Subscribe to our newsletter</h4>
+        <h3>Subscribe to our newsletter</h3>
         <p>Get the latest on AI, automation and digital transformation — straight to your inbox.</p>
       </div>
       <form class="news-form" data-validate aria-label="Newsletter signup">
