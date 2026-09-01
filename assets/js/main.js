@@ -28,6 +28,19 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.style.overflow = '';
       });
     });
+    // Escape closes the mobile menu (it previously had no keyboard way to
+    // dismiss it) and returns focus to the burger button so keyboard users
+    // land back where they started rather than losing their place.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menu.classList.contains('open')) {
+        menu.classList.remove('open');
+        burger.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+        burger.setAttribute('aria-label', 'Open menu');
+        document.body.style.overflow = '';
+        burger.focus();
+      }
+    });
   }
 
   // Back to top
