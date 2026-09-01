@@ -82,8 +82,8 @@
       <form action="contact.php" method="post" data-validate aria-label="Contact form">
         <div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" name="company_url" tabindex="-1" autocomplete="off"></label></div>
         <div class="row-2">
-          <div class="field"><label for="c-name">Full Name</label><input id="c-name" name="name" type="text" placeholder="Your name" autocomplete="name" required><span class="err">Please enter your name.</span></div>
-          <div class="field"><label for="c-email">Email Address</label><input id="c-email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required><span class="err">Please enter a valid email.</span></div>
+          <div class="field"><label for="c-name">Full Name</label><input id="c-name" name="name" type="text" placeholder="Your name" autocomplete="name" required aria-describedby="c-name-err"><span class="err" id="c-name-err">Please enter your name.</span></div>
+          <div class="field"><label for="c-email">Email Address</label><input id="c-email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required aria-describedby="c-email-err"><span class="err" id="c-email-err">Please enter a valid email.</span></div>
         </div>
         <div class="row-2">
           <div class="field"><label for="c-phone">Phone Number</label><input id="c-phone" name="phone" type="tel" placeholder="+91 ..." autocomplete="tel"></div>
@@ -91,7 +91,7 @@
             <select id="c-service" name="service"><option value="" disabled selected>Select a Service</option><option>AI Solutions</option><option>Software Development</option><option>Digital Marketing</option><option>Branding &amp; Design</option><option>Cloud &amp; IT Services</option><option>Other</option></select>
           </div>
         </div>
-        <div class="field"><label for="c-msg">Project Details</label><textarea id="c-msg" name="message" placeholder="Tell us a bit about your project..." required></textarea><span class="err">Please tell us about your project.</span></div>
+        <div class="field"><label for="c-msg">Project Details</label><textarea id="c-msg" name="message" placeholder="Tell us a bit about your project..." required aria-describedby="c-msg-err"></textarea><span class="err" id="c-msg-err">Please tell us about your project.</span></div>
         <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Send Message <i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button>
         <p class="form-status" role="status" aria-live="polite"></p>
       </form>
@@ -121,7 +121,7 @@
       </div>
       <div class="foot-cols">
         <div class="foot-col">
-          <h4>Company</h4>
+          <h3>Company</h3>
           <ul>
             <li><a href="about.html">About Us</a></li>
             <li><a href="about.html#team">Our Team</a></li>
@@ -131,7 +131,7 @@
           </ul>
         </div>
         <div class="foot-col">
-          <h4>Services</h4>
+          <h3>Services</h3>
           <ul>
             <li><a href="ai-solutions.html">AI Solutions</a></li>
             <li><a href="software-development.html">Software Development</a></li>
@@ -141,7 +141,7 @@
           </ul>
         </div>
         <div class="foot-col">
-          <h4>Explore</h4>
+          <h3>Explore</h3>
           <ul>
             <li><a href="industries.html">Industries</a></li>
             <li><a href="solutions.html">Solutions</a></li>
@@ -151,7 +151,7 @@
           </ul>
         </div>
         <div class="foot-col">
-          <h4>Legal &amp; Support</h4>
+          <h3>Legal &amp; Support</h3>
           <ul>
             <li><a href="privacy-policy.html">Privacy Policy</a></li>
             <li><a href="terms.html">Terms &amp; Conditions</a></li>
@@ -165,7 +165,7 @@
 
     <div class="foot-mid">
       <div class="news">
-        <h4>Subscribe to our newsletter</h4>
+        <h3>Subscribe to our newsletter</h3>
         <p>Get the latest on AI, automation and digital transformation — straight to your inbox.</p>
       </div>
       <form class="news-form" action="contact.php" method="post" data-validate aria-label="Newsletter signup">
@@ -197,6 +197,6 @@
   </div>
 </footer>
 <script src="assets/js/analytics.js"></script>
-<script src="assets/js/main.js"></script>
+<script src="assets/js/main.js" defer></script>
 </body>
 </html>

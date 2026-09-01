@@ -44,6 +44,14 @@ DirectoryIndex index.html
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  # Blocks this site from being framed by another origin (clickjacking
+  # protection). No page here is designed to be embedded in an iframe, so
+  # this has no effect on any legitimate use of the site. Intentionally not
+  # pairing this with a Content-Security-Policy header -- a real CSP would
+  # need to allowlist every inline <script>/<style> across the site (nonces
+  # or hashes), which is a much larger, riskier change than this audit's
+  # P3-5 finding calls for.
+  Header always set X-Frame-Options "SAMEORIGIN"
 </IfModule>
 
 # Do not expose directory listings if a directory has no index file.

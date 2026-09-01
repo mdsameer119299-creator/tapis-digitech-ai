@@ -28,6 +28,19 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.style.overflow = '';
       });
     });
+    // Escape closes the mobile menu (it previously had no keyboard way to
+    // dismiss it) and returns focus to the burger button so keyboard users
+    // land back where they started rather than losing their place.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menu.classList.contains('open')) {
+        menu.classList.remove('open');
+        burger.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+        burger.setAttribute('aria-label', 'Open menu');
+        document.body.style.overflow = '';
+        burger.focus();
+      }
+    });
   }
 
   // Back to top
@@ -192,6 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var field = inp.closest('.field'); var valid = inp.value.trim().length > 0;
         if (inp.type === 'email') valid = valid && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inp.value);
         if (field) field.classList.toggle('invalid', !valid);
+        inp.setAttribute('aria-invalid', valid ? 'false' : 'true');
         if (!valid) ok = false;
       });
       var status = f.querySelector('.form-status');
@@ -199,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (status){ status.className='form-status bad'; status.textContent='This form is not connected to a server endpoint yet.'; }
     });
     f.querySelectorAll('input,textarea,select').forEach(function(inp){
-      inp.addEventListener('input', function(){ var fld=inp.closest('.field'); if(fld) fld.classList.remove('invalid'); });
+      inp.addEventListener('input', function(){ var fld=inp.closest('.field'); if(fld) fld.classList.remove('invalid'); inp.setAttribute('aria-invalid', 'false'); });
     });
   });
 
@@ -212,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('#contact-form form, .news-form').forEach(function (f) {
     f.setAttribute('novalidate','');
     f.querySelectorAll('input,textarea,select').forEach(function(inp){
-      inp.addEventListener('input', function(){ var fld=inp.closest('.field'); if(fld) fld.classList.remove('invalid'); });
+      inp.addEventListener('input', function(){ var fld=inp.closest('.field'); if(fld) fld.classList.remove('invalid'); inp.setAttribute('aria-invalid', 'false'); });
     });
 
     // Track the first meaningful interaction with the main contact form (not
@@ -244,6 +258,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var field = inp.closest('.field'); var valid = inp.value.trim().length > 0;
         if (inp.type === 'email') valid = valid && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inp.value);
         if (field) field.classList.toggle('invalid', !valid);
+        inp.setAttribute('aria-invalid', valid ? 'false' : 'true');
         if (!valid) ok = false;
       });
       var status = f.querySelector('.form-status');
