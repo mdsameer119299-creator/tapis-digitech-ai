@@ -82,8 +82,8 @@
       <form action="contact.php" method="post" data-validate aria-label="Contact form">
         <div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" name="company_url" tabindex="-1" autocomplete="off"></label></div>
         <div class="row-2">
-          <div class="field"><label for="c-name">Full Name</label><input id="c-name" name="name" type="text" placeholder="Your name" autocomplete="name" required><span class="err">Please enter your name.</span></div>
-          <div class="field"><label for="c-email">Email Address</label><input id="c-email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required><span class="err">Please enter a valid email.</span></div>
+          <div class="field"><label for="c-name">Full Name</label><input id="c-name" name="name" type="text" placeholder="Your name" autocomplete="name" required aria-describedby="c-name-err"><span class="err" id="c-name-err">Please enter your name.</span></div>
+          <div class="field"><label for="c-email">Email Address</label><input id="c-email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required aria-describedby="c-email-err"><span class="err" id="c-email-err">Please enter a valid email.</span></div>
         </div>
         <div class="row-2">
           <div class="field"><label for="c-phone">Phone Number</label><input id="c-phone" name="phone" type="tel" placeholder="+91 ..." autocomplete="tel"></div>
@@ -91,7 +91,7 @@
             <select id="c-service" name="service"><option value="" disabled selected>Select a Service</option><option>AI Solutions</option><option>Software Development</option><option>Digital Marketing</option><option>Branding &amp; Design</option><option>Cloud &amp; IT Services</option><option>Other</option></select>
           </div>
         </div>
-        <div class="field"><label for="c-msg">Project Details</label><textarea id="c-msg" name="message" placeholder="Tell us a bit about your project..." required></textarea><span class="err">Please tell us about your project.</span></div>
+        <div class="field"><label for="c-msg">Project Details</label><textarea id="c-msg" name="message" placeholder="Tell us a bit about your project..." required aria-describedby="c-msg-err"></textarea><span class="err" id="c-msg-err">Please tell us about your project.</span></div>
         <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Send Message <i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button>
         <p class="form-status" role="status" aria-live="polite"></p>
       </form>
