@@ -145,7 +145,7 @@ def header(depth, active):
     )
     return f"""<header class="header">
   <div class="container nav">
-    <a class="brand" href="{p}index.html" aria-label="TAPIS DIGITECH home"><img src="{p}assets/logos/logo-head.png" alt="TAPIS DIGITECH logo" title="TAPIS DIGITECH — Enterprise AI &amp; Digital Transformation" width="260" height="78" fetchpriority="high" decoding="async"></a>
+    <a class="brand" href="{p}index.html" aria-label="TAPIS DIGITECH home"><img src="{p}assets/logos/logo-light.png" alt="TAPIS DIGITECH — Digital Solutions, Growth, Success" title="TAPIS DIGITECH — Enterprise AI &amp; Digital Transformation" width="200" height="100" fetchpriority="high" decoding="async"></a>
     <nav class="nav-links-wrap" aria-label="Primary">
       <ul class="nav-links">{nav_links}</ul>
     </nav>
