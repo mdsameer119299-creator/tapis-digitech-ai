@@ -1025,7 +1025,11 @@
         for(var j=i+1;j<pts.length;j++){var q=pts[j],dx=p.x-q.x,dy=p.y-q.y,d=dx*dx+dy*dy;if(d<17000){ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.strokeStyle='rgba(98,186,240,'+(.26*(1-d/17000))+')';ctx.lineWidth=1;ctx.stroke();}}}
       raf=requestAnimationFrame(tick);}
     var vis=true;size();tick();
-    window.addEventListener('resize',function(){cancelAnimationFrame(raf);size();tick();});
+    var particleResizeT;
+    window.addEventListener('resize',function(){
+      clearTimeout(particleResizeT);
+      particleResizeT=setTimeout(function(){cancelAnimationFrame(raf);size();tick();},150);
+    });
     if('IntersectionObserver' in window){new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){if(!vis){vis=true;tick();}}else{vis=false;cancelAnimationFrame(raf);}});},{threshold:0}).observe(cv);}
   }
 })();
@@ -1081,7 +1085,11 @@
   function boot(){sel(cur,false);auto();}
   if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){boot();io.disconnect();}});},{threshold:.15});io.observe(document.querySelector('.afx-sec'));}
   else boot();
-  window.addEventListener('resize',function(){moveComet(idx);});
+  var cometResizeT;
+  window.addEventListener('resize',function(){
+    clearTimeout(cometResizeT);
+    cometResizeT=setTimeout(function(){moveComet(idx);},150);
+  });
 })();
 </script>
 
