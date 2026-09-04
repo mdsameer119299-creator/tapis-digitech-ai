@@ -26,6 +26,10 @@ jobs:
       - name: Run SEO and contact hardening
         run: python3 seo_hardening.py
 
+      - name: Keep development preview non-indexable
+        run: |
+          git show origin/main:free-tools/website-seo-audit/_dev-preview.html > free-tools/website-seo-audit/_dev-preview.html
+
       - name: Commit generated fixes
         run: |
           git config user.name "github-actions[bot]"
