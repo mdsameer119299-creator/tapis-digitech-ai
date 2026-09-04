@@ -1,0 +1,77 @@
+/* TAPIS DIGITECH LAB — additive styles for /free-tools/.
+   Deliberately small: everything here composes with the existing design
+   system in assets/css/style.css (tokens, .res-card, .status-badge,
+   .form-card, .field/.err, .page-hero, .grid-3/.grid-4). Nothing in this
+   file redefines or overrides the shared site design -- it only adds the
+   handful of rules the tools pages need that don't exist yet (a "Live"
+   status-badge colour, non-interactive hover state for Coming Soon cards,
+   and the audit report's score/findings visuals). */
+
+/* ---- status-badge: Live variant (Coming Soon uses the existing .st-soon) */
+.status-badge.st-live{background:#eafaf0;color:#1c7a45}
+.status-badge.st-live::before{background:#28a55f}
+
+/* ---- Coming Soon cards are informational, not interactive: don't imply
+   clickability with the shared .res-card hover-lift. */
+.ft-card.ft-soon{cursor:default}
+.ft-card.ft-soon:hover{transform:none;box-shadow:none}
+.ft-card.ft-soon .res-body{opacity:.92}
+
+/* ---- Audit tool: URL form additions (form-card/field/err/form-status are
+   reused as-is from the shared stylesheet) */
+.ft-audit-form .field{margin-bottom:14px}
+.ft-audit-form-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start}
+.ft-audit-form-row .field{flex:1 1 320px;margin-bottom:0}
+.ft-audit-form-row button{flex:0 0 auto;white-space:nowrap}
+.ft-hint{color:var(--muted);font-size:13.5px;margin-top:10px}
+
+/* ---- Loading state */
+.ft-loading{display:none;align-items:center;gap:12px;padding:20px 4px;color:var(--muted)}
+.ft-loading.on{display:flex}
+.ft-spinner{width:20px;height:20px;border-radius:50%;border:2.5px solid var(--line);border-top-color:var(--blue-500);animation:ft-spin .8s linear infinite;flex:0 0 auto}
+@keyframes ft-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.ft-spinner{animation-duration:2.4s}}
+
+/* ---- Results container */
+.ft-report{display:none}
+.ft-report.on{display:block}
+.ft-score-head{display:flex;flex-wrap:wrap;gap:28px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px;margin-bottom:24px}
+.ft-score-num{font-family:var(--font-head);font-weight:700;font-size:52px;color:var(--blue-500);line-height:1}
+.ft-score-num small{font-size:20px;color:var(--muted);font-weight:600}
+.ft-score-target{color:var(--ink-soft);font-size:15px;word-break:break-all}
+.ft-cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px}
+.ft-cat-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+.ft-cat-card b{display:block;font-family:var(--font-head);font-size:22px;color:var(--ink)}
+.ft-cat-card span{font-size:13px;color:var(--muted)}
+.ft-cat-bar{height:6px;border-radius:6px;background:var(--line-2);margin-top:10px;overflow:hidden}
+.ft-cat-bar i{display:block;height:100%;background:var(--grad-blue);border-radius:6px}
+
+/* ---- Findings */
+.ft-findings-group{margin-bottom:26px}
+.ft-findings-group h3{font-size:17px;margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.ft-finding{border:1px solid var(--line);border-left-width:4px;border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:10px;background:#fff}
+.ft-finding h4{font-size:15.5px;margin-bottom:5px}
+.ft-finding p{font-size:14.5px;color:var(--muted);margin-bottom:4px}
+.ft-finding .ft-evidence{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:var(--surface-2);border-radius:8px;padding:8px 10px;margin-top:8px;color:var(--ink-soft);word-break:break-word}
+.ft-sev{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-head);font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.ft-sev::before{content:"";width:6px;height:6px;border-radius:50%}
+.ft-finding.sev-critical{border-left-color:#d23b4e}
+.ft-sev.sev-critical{background:#fdeaed;color:#b3293c}.ft-sev.sev-critical::before{background:#d23b4e}
+.ft-finding.sev-high{border-left-color:#e0922a}
+.ft-sev.sev-high{background:#fff4e6;color:#a86411}.ft-sev.sev-high::before{background:#e0922a}
+.ft-finding.sev-medium{border-left-color:var(--blue-500)}
+.ft-sev.sev-medium{background:rgba(32,144,234,.12);color:var(--blue-600)}.ft-sev.sev-medium::before{background:var(--blue-500)}
+.ft-finding.sev-low{border-left-color:var(--muted)}
+.ft-sev.sev-low{background:var(--surface-2);color:var(--muted)}.ft-sev.sev-low::before{background:var(--muted)}
+.ft-finding.sev-passed{border-left-color:#28a55f}
+.ft-sev.sev-passed{background:#eafaf0;color:#1c7a45}.ft-sev.sev-passed::before{background:#28a55f}
+
+/* ---- Error / not-yet-available state (never a fabricated report) */
+.ft-error{display:none;background:#fdeaed;border:1px solid #f3c2cb;color:#b3293c;border-radius:var(--radius);padding:18px 20px;margin-top:16px}
+.ft-error.on{display:block}
+.ft-error h3{font-size:16px;color:#b3293c;margin-bottom:6px}
+.ft-error p{font-size:14.5px;margin:0}
+
+/* ---- Dev-only sample-report banner (see _dev-preview.html); kept here so
+   the one file that uses it doesn't need its own stylesheet. */
+.ft-dev-banner{background:#fff4e6;border:1px solid #f0c98a;color:#8a5a10;border-radius:var(--radius);padding:14px 18px;margin-bottom:22px;font-family:var(--font-head);font-weight:600;font-size:14.5px;text-align:center}
