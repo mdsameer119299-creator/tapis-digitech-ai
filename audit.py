@@ -1,6 +1,9 @@
 import os, re, json, glob
-ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__))); os.chdir(ROOT)
-html=[f for f in glob.glob("**/*.html",recursive=True) if not f.startswith("tools")]
+ROOT=os.path.dirname(os.path.abspath(__file__)); os.chdir(ROOT)  # this script lives at the repo root, not nested under tools/
+html=[f for f in glob.glob("**/*.html",recursive=True)
+      if not f.startswith("tools")
+      and not f.endswith("_dev-preview.html")          # dev-only, noindexed, robots-disallowed
+      and "/_dev/" not in f]                            # dev-only capability probes, never public pages
 DOMAIN="https://www.tapisdigitech.com/"
 errors=[]; warn=[]
 href_re=re.compile(r'(?:href|src)="([^"]+)"')
