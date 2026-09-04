@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
 
-# Block nothing public; adjust as needed
+# Development-only pages: never indexable, never linked from navigation.
+Disallow: /free-tools/*/_dev-preview.html
+Disallow: /free-tools/_dev/
+
 Sitemap: https://www.tapisdigitech.com/sitemap.xml
