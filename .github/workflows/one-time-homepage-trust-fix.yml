@@ -1,0 +1,68 @@
+name: One-time homepage trust cleanup
+
+on:
+  push:
+    branches: [fix/homepage-trust-audit]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Remove unsupported-looking homepage metrics and placeholders
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          replacements = {
+              '<span>Agent deployed<br><b>+38% throughput</b></span>': '<span>Agent deployed<br><b>Live workflow</b></span>',
+              '<span class="sr-up">+38%</span>': '<span class="sr-up">Live</span>',
+              '<span>Latency <b>240ms</b></span><span>Resolved <b id="tdxResolved">12,480</b></span><span>Accuracy <b>98.7%</b></span>': '<span>Response <b>Fast</b></span><span>Automation <b>Live</b></span><span>Controls <b>Guarded</b></span>',
+              '<b data-count="75" data-suffix="%">0</b><span>Faster response</span>': '<b>Outcome-led</b><span>Faster response</span>',
+              '<b data-count="60" data-suffix="%">0</b><span>Lower manual work</span>': '<b>Automation-first</b><span>Lower manual work</span>',
+              '<b data-count="3" data-suffix="×">0</b><span>More qualified leads</span>': '<b>Lead-focused</b><span>More qualified leads</span>',
+              '<span class="kick lt">Proven impact</span>': '<span class="kick lt">Business outcomes</span>',
+              '<b data-count="42" data-suffix="%">0</b><span>Lower operating cost</span>': '<b>Cost efficiency</b><span>Lower operating cost</span>',
+              '<b data-count="3.4" data-suffix="×" data-dec="1">0</b><span>Faster time-to-market</span>': '<b>Faster delivery</b><span>Faster time-to-market</span>',
+              '<b data-count="68" data-suffix="%">0</b><span>Tickets auto-resolved</span>': '<b>Support automation</b><span>Tickets auto-resolved</span>',
+              '<b data-count="12" data-suffix=" wks">0</b><span>To first value in production</span>': '<b>Production value</b><span>To first value in production</span>',
+              '<p class="note">Illustrative ranges based on typical enterprise engagements; actual results vary by scope and data maturity.</p>': '<p class="note">Outcomes depend on your workflows, data, systems and implementation scope. We measure the baseline first, then report actual results.</p>',
+              '<b>Rahul Sharma</b>': '<b>Candidate A</b>',
+              '<b>Priya Patel</b>': '<b>Candidate B</b>',
+              '<span class="sc">92%</span>': '<span class="sc">Matched</span>',
+              '<span class="sc">87%</span>': '<span class="sc">Matched</span>',
+          }
+
+          for old, new in replacements.items():
+              if old not in s:
+                  raise SystemExit(f'Missing expected homepage marker: {old}')
+              s = s.replace(old, new, 1)
+
+          # Remove social links that currently point to '#' rather than verified profiles.
+          start = s.find('        <div class="socials">')
+          if start != -1:
+              end = s.find('        </div>', start)
+              if end == -1:
+                  raise SystemExit('Could not find end of socials block')
+              s = s[:start] + s[end + len('        </div>'):]
+
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Remove this one-time workflow and commit
+        run: |
+          git rm .github/workflows/one-time-homepage-trust-fix.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "fix: remove unsupported homepage metrics and placeholders [skip ci]"
+          git push
