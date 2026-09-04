@@ -548,7 +548,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);line-height:1.12;color:var(--ink);fo
   .burger{display:flex}
   .nav{height:76px}
   .brand img{height:48px}
-  .mobile-menu{inset:76px 0 0}
+  #mobileMenu{top:76px}
   .hero-grid,.grid-2,.cta-inner,.contact-grid{grid-template-columns:1fr}
   .hero{padding-bottom:64px}
   .hero h1{font-size:46px}
@@ -586,7 +586,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);line-height:1.12;color:var(--ink);fo
 }
 
 /* mobile menu */
-.mobile-menu{display:none;position:fixed;inset:96px 0 0;background:var(--navy-900);z-index:99;padding:24px;overflow-y:auto}
+.mobile-menu{display:none;position:fixed;top:96px;left:0;right:0;height:100vh;background:var(--navy-900);z-index:99;padding:24px;overflow-y:auto}
 .mobile-menu a{display:block;color:#cdd7e8;font-family:var(--font-head);font-weight:500;font-size:18.5px;
   padding:15px 6px;border-bottom:1px solid var(--line-dark)}
 .mobile-menu a:hover{color:var(--blue-400)}
