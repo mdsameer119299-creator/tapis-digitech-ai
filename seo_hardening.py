@@ -217,8 +217,8 @@ for path in files:
     original = text
     rel = path.relative_to(ROOT).as_posix()
 
-    robots = ('noindex, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
-              if rel == 'search.html' else
+    robots = ('noindex, nofollow, noarchive'
+              if rel == 'search.html' or rel.endswith('/_dev-preview.html') else
               'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1')
     text = re.sub(r'<meta name="robots" content="[^"]*">', f'<meta name="robots" content="{robots}">', text, count=1)
 
