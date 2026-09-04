@@ -61,6 +61,10 @@
 - [Rahul Mehta](https://www.tapisdigitech.com/authors/rahul-mehta.html)
 - [Sneha Nair](https://www.tapisdigitech.com/authors/sneha-nair.html)
 
+## TAPIS DIGITECH LAB (free tools)
+- [TAPIS DIGITECH LAB](https://www.tapisdigitech.com/free-tools/index.html): Free digital growth tools and business audits.
+- [Website SEO Audit](https://www.tapisdigitech.com/free-tools/website-seo-audit/index.html): Free technical, on-page and structured-data SEO audit for any public URL.
+
 ## Legal
 - [Privacy Policy](https://www.tapisdigitech.com/privacy-policy.html)
 - [Terms & Conditions](https://www.tapisdigitech.com/terms.html)

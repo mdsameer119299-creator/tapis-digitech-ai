@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEV PREVIEW — Website SEO Audit report layout (not a real page)</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../../assets/icons/all.min.css">
+<link rel="stylesheet" href="../../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/free-tools.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body style="background:var(--surface-2)">
+<main style="max-width:860px;margin:0 auto;padding:40px 20px 80px">
+  <div class="ft-dev-banner">⚠ DEVELOPMENT PREVIEW — SAMPLE DATA ONLY. This is not a real scan of any website and must never be linked from, or mistaken for, a production page.</div>
+
+  <div id="dev-report-body"></div>
+
+  <div class="ft-dev-banner">⚠ SAMPLE DATA ONLY — every number and finding above is hand-written placeholder content used purely to preview the report layout. It is not connected to the live tool.</div>
+</main>
+<script src="../assets/js/audit-engine.js"></script>
+<script>
+// Hand-written sample data for interface preview ONLY. This object exists
+// nowhere else in the codebase -- it is never loaded by the real tool page
+// (free-tools/website-seo-audit/index.html), which has no mock-data code
+// path at all. This file is unlinked from site navigation, excluded from
+// the sitemap and disallowed in robots.txt.
+var SAMPLE_REPORT = {
+  target: 'https://example.com/ (sample — not a real scan)',
+  overallScore: 78,
+  categories: [
+    { key: 'technical', label: 'Technical SEO', score: 82 },
+    { key: 'onpage', label: 'On-Page SEO', score: 74 },
+    { key: 'content', label: 'Content', score: 69 },
+    { key: 'structuredData', label: 'Structured Data', score: 91 },
+    { key: 'social', label: 'Social Metadata', score: 76 }
+  ],
+  findings: [
+    { category: 'onpage', severity: 'critical', title: 'Missing Meta Description', evidence: 'No <meta name="description"> tag was found on this sample page.', recommendation: 'Add a unique 120–160 character meta description summarising the page.' },
+    { category: 'onpage', severity: 'high', title: 'Multiple H1 Elements', evidence: 'Sample: 3 <h1> elements detected; expected exactly 1.', recommendation: 'Use one <h1> per page and demote the others to <h2>/<h3>.' },
+    { category: 'technical', severity: 'medium', title: 'Missing Canonical URL', evidence: 'No <link rel="canonical"> tag was found (sample).', recommendation: 'Add a self-referencing canonical tag to avoid duplicate-content signals.' },
+    { category: 'social', severity: 'low', title: 'Twitter Card Type Not Set', evidence: 'twitter:card meta tag is absent (sample).', recommendation: 'Add <meta name="twitter:card" content="summary_large_image">.' },
+    { category: 'technical', severity: 'passed', title: 'HTTPS Enabled', evidence: 'Sample page served over HTTPS with a valid certificate chain.', recommendation: '' },
+    { category: 'structuredData', severity: 'passed', title: 'JSON-LD Present', evidence: 'Sample: 2 JSON-LD blocks detected (Organization, WebSite).', recommendation: '' }
+  ]
+};
+document.addEventListener('DOMContentLoaded', function () {
+  window.TDXAuditEngine.AuditReport.render(document.getElementById('dev-report-body'), SAMPLE_REPORT);
+});
+</script>
+</body>
+</html>
