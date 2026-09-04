@@ -1,0 +1,28 @@
+name: Protect free-tools dev preview
+on:
+  push:
+    branches: [feature/client-first-navigation]
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix SEO hardening exception
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('seo_hardening.py')
+          t=p.read_text(encoding='utf-8')
+          old="""    robots = ('noindex, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'\n              if rel == 'search.html' else\n              'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1')"""
+          new="""    robots = ('noindex, nofollow, noarchive'\n              if rel == 'search.html' or rel.endswith('/_dev-preview.html') else\n              'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1')"""
+          if old not in t: raise SystemExit('expected SEO robots block not found')
+          p.write_text(t.replace(old,new,1),encoding='utf-8')
+          PY
+          rm -f .github/workflows/fix-seo-preview.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add seo_hardening.py .github/workflows/fix-seo-preview.yml
+          git commit -m "fix: exclude free-tools dev preview from indexing"
+          git push
