@@ -1,0 +1,68 @@
+name: Fix Website Navigation
+on:
+  push:
+    branches: [feature/website-development-page]
+permissions:
+  contents: write
+jobs:
+  fix-nav:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Add AI Voice Receptionist and align mobile Services nav
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          voice = '<a href="ai-voice-receptionist.html" data-track-cta="nav_services_click" data-cta-name="automate_ai_voice_receptionist"><i class="fa-solid fa-phone-volume" aria-hidden="true"></i><span class="mega-txt"><b>AI Voice Receptionist</b><small>Never miss a customer call with an AI receptionist that answers, qualifies and routes conversations.</small></span></a>'
+          voice_simple = '<a href="ai-voice-receptionist.html"><i class="fa-solid fa-phone-volume" aria-hidden="true"></i>AI Voice Receptionist</a>'
+
+          changed=[]
+          for p in Path('.').rglob('*.html'):
+              if '.git' in p.parts or p.name.startswith('_dev-preview'):
+                  continue
+              s=p.read_text(encoding='utf-8')
+              orig=s
+              # Desktop mega menu: add voice item once, immediately before WhatsApp.
+              if 'data-cta-name="automate_whatsapp_chatbots"' in s and 'data-cta-name="automate_ai_voice_receptionist"' not in s:
+                  s=s.replace('<a href="whatsapp-ai-automation.html" data-track-cta="nav_services_click" data-cta-name="automate_whatsapp_chatbots">', voice+'<a href="whatsapp-ai-automation.html" data-track-cta="nav_services_click" data-cta-name="automate_whatsapp_chatbots">', 1)
+              # Older/simple mobile navigation: add voice before WhatsApp if present.
+              if 'href="whatsapp-ai-automation.html"' in s and voice_simple not in s:
+                  # Only target the simple/mobile-style occurrence lacking data-cta-name.
+                  s=re.sub(r'(<a href="whatsapp-ai-automation\.html">)', voice_simple+r'\1', s, count=1)
+              # If a legacy Solutions primary-nav item remains, remove only the primary-nav list item.
+              s=re.sub(r'<li><a href="solutions\.html">Solutions</a></li>', '', s)
+              if s != orig:
+                  p.write_text(s, encoding='utf-8')
+                  changed.append(str(p))
+          print(f'Changed {len(changed)} files')
+          for x in changed: print(x)
+          PY
+      - name: Validate navigation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          files=[p for p in Path('.').rglob('*.html') if '.git' not in p.parts and not p.name.startswith('_dev-preview')]
+          missing=[str(p) for p in files if 'ai-voice-receptionist.html' not in p.read_text(encoding='utf-8')]
+          if missing:
+              print('Missing AI Voice Receptionist in:', *missing, sep='\n')
+              raise SystemExit(1)
+          legacy=[str(p) for p in files if '<li><a href="solutions.html">Solutions</a></li>' in p.read_text(encoding='utf-8')]
+          if legacy:
+              print('Legacy Solutions nav remains:', *legacy, sep='\n')
+              raise SystemExit(1)
+          print(f'Validated {len(files)} HTML pages')
+          PY
+      - name: Commit and remove workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add '*.html' '**/*.html' .github/workflows/fix-website-nav.yml || true
+          git commit -m 'fix: add AI Voice Receptionist to services navigation [skip ci]' || true
+          git push
+          git rm .github/workflows/fix-website-nav.yml || true
+          git commit -m 'chore: remove temporary navigation fixer [skip ci]' || true
+          git push
