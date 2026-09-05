@@ -2,7 +2,7 @@ name: TAPIS DIGITECH SEO hardening
 
 on:
   push:
-    branches: [seo-responsive-lead-gen-2026-08]
+    branches: [seo-responsive-lead-gen-2026-08, feature/website-development-page]
   workflow_dispatch:
 
 permissions:
@@ -19,25 +19,48 @@ jobs:
           fetch-depth: 0
 
       - name: Restore visual source-of-truth pages from main
+        if: github.ref_name == 'seo-responsive-lead-gen-2026-08'
         run: |
           git show origin/main:index.html > index.html
           git show origin/main:search.html > search.html
 
       - name: Run SEO and contact hardening
+        if: github.ref_name == 'seo-responsive-lead-gen-2026-08'
         run: python3 seo_hardening.py
 
       - name: Keep development preview non-indexable
+        if: github.ref_name == 'seo-responsive-lead-gen-2026-08'
         run: |
           git show origin/main:free-tools/website-seo-audit/_dev-preview.html > free-tools/website-seo-audit/_dev-preview.html
+
+      - name: Add AI Voice Receptionist and remove legacy Solutions primary nav
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          voice = '<a href="ai-voice-receptionist.html" data-track-cta="nav_services_click" data-cta-name="automate_ai_voice_receptionist"><i class="fa-solid fa-phone-volume" aria-hidden="true"></i><span class="mega-txt"><b>AI Voice Receptionist</b><small>Never miss a customer call with an AI receptionist that answers, qualifies and routes conversations.</small></span></a>'
+          voice_simple = '<a href="ai-voice-receptionist.html"><i class="fa-solid fa-phone-volume" aria-hidden="true"></i>AI Voice Receptionist</a>'
+          for p in Path('.').rglob('*.html'):
+              if '.git' in p.parts or p.name.startswith('_dev-preview'):
+                  continue
+              s=p.read_text(encoding='utf-8'); orig=s
+              if 'data-cta-name="automate_whatsapp_chatbots"' in s and 'data-cta-name="automate_ai_voice_receptionist"' not in s:
+                  s=s.replace('<a href="whatsapp-ai-automation.html" data-track-cta="nav_services_click" data-cta-name="automate_whatsapp_chatbots">', voice+'<a href="whatsapp-ai-automation.html" data-track-cta="nav_services_click" data-cta-name="automate_whatsapp_chatbots">', 1)
+              if 'href="whatsapp-ai-automation.html"' in s and voice_simple not in s:
+                  s=re.sub(r'(<a href="whatsapp-ai-automation\.html">)', voice_simple+r'\1', s, count=1)
+              s=re.sub(r'<li><a href="solutions\.html">Solutions</a></li>', '', s)
+              if s != orig:
+                  p.write_text(s, encoding='utf-8')
+          PY
 
       - name: Commit generated fixes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A -- '*.html' '**/*.html' 'build.py' 'seo_hardening.py'
+          git add -A -- '*.html' '**/*.html' 'build.py' 'seo_hardening.py' '.github/workflows/seo-hardening.yml'
           if git diff --cached --quiet; then
-            echo "No generated SEO/contact changes."
+            echo "No generated changes."
             exit 0
           fi
-          git commit -m "SEO: harden static pages [skip ci]"
+          git commit -m "fix: add AI Voice Receptionist to services navigation [skip ci]"
           git push
