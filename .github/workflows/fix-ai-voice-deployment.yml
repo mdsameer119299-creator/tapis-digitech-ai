@@ -1,0 +1,55 @@
+name: Fix AI Voice deployment page
+
+on:
+  push:
+    branches: [seo-responsive-lead-gen-2026-08]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: contains(github.event.head_commit.message, '[manual-ai-voice-fix]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fix AI Voice page regressions
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('ai-voice-receptionist.html')
+          s = p.read_text()
+          s = s.replace(
+              '<script src="assets/js/analytics.js" defer></script><script src="assets/js/analytics.js"></script>',
+              '<script src="assets/js/analytics.js" defer></script>'
+          )
+          for question in (
+              'Can it qualify leads?',
+              'Can it work after business hours?',
+              'Will it replace my staff?',
+          ):
+              old = f'<div class="faq-q" tabindex="0" role="button" aria-expanded="false">{question}</div>'
+              new = f'<div class="faq-q" tabindex="0" role="button" aria-expanded="false">{question}<i class="fa-solid fa-plus" aria-hidden="true"></i></div>'
+              s = s.replace(old, new)
+          p.write_text(s)
+          PY
+
+      - name: Validate fix
+        run: |
+          test "$(grep -o 'assets/js/analytics.js' ai-voice-receptionist.html | wc -l | tr -d ' ')" -eq 1
+          grep -q 'Can it qualify leads?.*fa-solid fa-plus' ai-voice-receptionist.html
+          grep -q 'Can it work after business hours?.*fa-solid fa-plus' ai-voice-receptionist.html
+          grep -q 'Will it replace my staff?.*fa-solid fa-plus' ai-voice-receptionist.html
+
+      - name: Commit fix and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/fix-ai-voice-deployment.yml
+          git add ai-voice-receptionist.html .github/workflows/seo-hardening.yml
+          git commit -m "Fix AI Voice deployment page [skip ci]"
+          git push
+
+# Temporary one-shot deployment repair; self-removes after a successful run.
