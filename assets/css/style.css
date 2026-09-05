@@ -548,7 +548,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);line-height:1.12;color:var(--ink);fo
   .burger{display:flex}
   .nav{height:76px}
   .brand img{height:48px}
-  .mobile-menu{inset:76px 0 0}
+  #mobileMenu{top:76px}
   .hero-grid,.grid-2,.cta-inner,.contact-grid{grid-template-columns:1fr}
   .hero{padding-bottom:64px}
   .hero h1{font-size:46px}
@@ -586,7 +586,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);line-height:1.12;color:var(--ink);fo
 }
 
 /* mobile menu */
-.mobile-menu{display:none;position:fixed;inset:96px 0 0;background:var(--navy-900);z-index:99;padding:24px;overflow-y:auto}
+.mobile-menu{display:none;position:fixed;top:96px;left:0;right:0;height:100vh;background:var(--navy-900);z-index:99;padding:24px;overflow-y:auto}
 .mobile-menu a{display:block;color:#cdd7e8;font-family:var(--font-head);font-weight:500;font-size:18.5px;
   padding:15px 6px;border-bottom:1px solid var(--line-dark)}
 .mobile-menu a:hover{color:var(--blue-400)}
@@ -869,3 +869,56 @@ p,li,span,a,h1,h2,h3,h4{overflow-wrap:break-word}
 .rel-grid > .rel-card .rel-txt b{font-size:20px!important;letter-spacing:-.01em!important}
 .rel-grid > .rel-card .rel-txt span{font-size:15.5px!important;line-height:1.62!important}
 .rel-grid > .rel-card .rel-arrow{margin-top:18px!important;font-size:15px!important;align-self:flex-start!important}
+
+/* ============================================================
+   Services mega-menu (desktop) + mobile expandable groups.
+   Additive only: composes with the existing .dropdown/.has-drop
+   and .faq-item/.faq-q/.faq-a components above via extra classes
+   and higher-specificity selectors -- nothing above is edited, and
+   .has-drop's existing ARIA/keyboard/Escape JS in main.js already
+   covers this menu with zero extra script.
+   ============================================================ */
+.dropdown.mega{left:0;min-width:640px;max-width:680px;padding:20px 22px}
+.mega-cols{display:grid;grid-template-columns:1fr 1fr;gap:2px 30px}
+.mega-col{padding:8px 0}
+.mega-col:nth-child(n+3){border-top:1px solid var(--line-2);margin-top:4px;padding-top:16px}
+.mega-group{font-family:var(--font-head);font-size:10.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--blue-500);margin:2px 0 8px 8px}
+.dropdown.mega a{align-items:flex-start;padding:8px}
+.dropdown.mega a i{width:30px;height:30px;font-size:12px;flex:none;margin-top:1px}
+.mega-txt{display:flex;flex-direction:column;gap:2px}
+.mega-txt b{font-family:var(--font-head);font-size:13.5px;font-weight:600;color:var(--ink-soft)}
+.mega-txt small{font-size:11.5px;font-weight:400;line-height:1.4;color:var(--muted)}
+.dropdown.mega a:hover .mega-txt b{color:var(--blue-600)}
+.mega-cta{margin-top:14px;padding-top:14px;border-top:1px solid var(--line-2)}
+.mega-cta a{display:flex;align-items:center;gap:12px;padding:12px 13px;border-radius:11px;
+  background:var(--grad-blue-soft);transition:.18s}
+.mega-cta a i{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;
+  background:#fff;color:var(--blue-500);font-size:14px;flex:none}
+.mega-cta a span{display:flex;flex-direction:column;gap:1px}
+.mega-cta a small{font-size:11.5px;color:var(--muted);font-weight:500}
+.mega-cta a b{font-family:var(--font-head);font-size:13.5px;font-weight:600;color:var(--blue-600)}
+.mega-cta a:hover{background:var(--grad-blue)}
+.mega-cta a:hover i{color:var(--blue-600)}
+.mega-cta a:hover small{color:rgba(255,255,255,.82)}
+.mega-cta a:hover b{color:#fff}
+
+/* Mobile menu: Services becomes an expandable accordion group,
+   reusing the existing .faq-item/.faq-q/.faq-a toggle (same class
+   names main.js already wires up) re-skinned for the dark overlay. */
+.mobile-menu .faq-item{background:none;border:0;border-bottom:1px solid var(--line-dark);
+  border-radius:0;margin-bottom:0}
+.mobile-menu .faq-q{padding:15px 6px;color:#cdd7e8;font-family:var(--font-head);font-weight:500;
+  font-size:18.5px}
+.mobile-menu .faq-q i{color:var(--blue-400);font-size:15px}
+.mobile-menu .faq-a{padding:0 6px}
+.mobile-menu .faq-item.open .faq-a{max-height:640px;padding:0 6px 10px}
+.mobile-menu .mm-group{padding:12px 6px 2px;font-size:11px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--blue-300)}
+.mobile-menu .faq-a a{display:block;padding:10px 6px 10px 16px;font-size:15.5px;font-weight:500;
+  border-bottom:0;color:#b7c4dc}
+.mobile-menu .faq-a a:hover{color:var(--blue-400)}
+.mobile-menu .mm-viewall{color:var(--blue-400)!important;font-weight:600!important;padding-left:6px!important;
+  margin-top:4px}
+.mobile-menu .mm-cta{margin-top:8px;background:rgba(32,144,234,.12);border-radius:10px;padding:12px!important}
+.mobile-menu .mm-cta b{display:block;color:var(--blue-300);margin-top:2px}
